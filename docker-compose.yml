@@ -1,0 +1,21 @@
+services:
+  notebookLM_demo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # イメージ名、コンテナ名を指定
+    image: notebooklm_demo_img
+    container_name: notebooklm_demo_ctr
+
+    #ポート設定
+    ports:
+      - 8080:8080
+     
+    # docker-compose up -d で起動するために必要
+    tty: true
+
+    #ディレクトリの設定マウント
+    working_dir: /src
+    volumes:
+      - ./src:/src
