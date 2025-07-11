@@ -9,11 +9,7 @@ RUN apt-get update && \
     ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
     apt-get clean
 
-# GCPに上げるときはコメント外す
-WORKDIR /src
-ADD src /src
-
-
+COPY ./requirements.txt /
 RUN pip install -r requirements.txt
 
 # タイムゾーンとロケール設定
@@ -22,14 +18,3 @@ ENV TZ=Asia/Tokyo \
     LANGUAGE=ja_JP:ja \
     LC_ALL=ja_JP.UTF-8
 
-
-# GCPに上げるときはコメント外す
-
-# Python / Flask 設定
-ENV FLASK_APP=/src/app.py \
-    PYTHONPATH=/src
-
-ENV PORT=8080
-EXPOSE 8080
-
-CMD ["python", "app.py"]

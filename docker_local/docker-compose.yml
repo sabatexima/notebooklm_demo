@@ -18,4 +18,4 @@ services:
     #ディレクトリの設定マウント
     working_dir: /src
     volumes:
-      - ./src:/src
+      - ../src:/src

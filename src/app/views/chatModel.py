@@ -49,7 +49,7 @@ class chat:
         # キャラクターを設定する
         user = self.setChara("aa")
         # LLMモデルを設定する
-        llm = self.setLlm("gemini-1.5-flash")
+        llm = self.setLlm("gemini-2.5-flash")
 
         # メッセージを作成する
         messages = [
