@@ -1,6 +1,6 @@
 # FlaskとBlueprintをインポートする
 from flask import Flask
-from app.views.sample import sample
+from app.chat.chat import chat
 
 
 # アプリケーションのインスタンスを生成する
@@ -16,4 +16,4 @@ def get_app():
 # Blueprintを登録する
 def _register_blueprint(app):
     # sample Blueprintを登録する
-    app.register_blueprint(sample)
+    app.register_blueprint(chat)

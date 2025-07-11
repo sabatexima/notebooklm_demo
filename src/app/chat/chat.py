@@ -1,19 +1,19 @@
 # 必要なライブラリをインポートする
 from flask import Blueprint,render_template,Flask, request, jsonify
-import app.views.chatModel as chatModel
+import app.chat.chatModel as chatModel
 
 # Blueprintを作成する
-sample = Blueprint("sample", __name__)
+chat = Blueprint("chat", __name__)
 
 
 # ルートURLへのアクセスがあった場合にindex.htmlを返す
-@sample.route('/')
+@chat.route('/')
 def index():
     return render_template('index.html')
 
 # /chatへのPOSTリクエストがあった場合にチャットの応答を返す
-@sample.route('/chat', methods=['POST'])
-def chat():
+@chat.route('/chat', methods=['POST'])
+def chatting():
     # ユーザーからのメッセージを取得する
     user_message = request.json.get('message')
     # チャットモデルをインスタンス化する

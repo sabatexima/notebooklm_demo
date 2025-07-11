@@ -36,7 +36,7 @@ class chat:
     # キャラクターを設定する
     def setChara(self,name):
         # JSONファイルを開いて読み込む
-        with open("app/views/chara.json", "r", encoding="utf-8") as file:
+        with open("app/chat/chara.json", "r", encoding="utf-8") as file:
             chara_data = json.load(file)
 
         # "user" のデータを取得
