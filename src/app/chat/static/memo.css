@@ -1,0 +1,189 @@
+body {
+  padding-top: 70px; /* Adjust for fixed navigation bar */
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.btn-create {
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Modal Styles */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1000; /* Sit on top, higher than other content */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0,0,0,0.6); /* Darker background w/ opacity */
+  display: flex; /* Add flex display */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+}
+
+.modal-content {
+  background-color: #ffffff; /* Pure white background */
+  padding: 30px; /* More padding */
+  border-radius: 15px; /* More rounded corners */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Stronger shadow */
+  width: 90%; /* Adjust width */
+  max-width: 500px; /* Max width for larger screens */
+  position: relative;
+  animation: fadeIn 0.3s ease-out; /* Simple fade-in animation */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.close-button {
+  color: #888; /* Softer close button color */
+  float: right;
+  font-size: 32px; /* Larger close button */
+  font-weight: normal; /* Lighter font weight */
+  cursor: pointer;
+  position: absolute;
+  top: 15px;
+  right: 20px;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: #333; /* Darker on hover */
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 25px; /* More space below title */
+  color: #333; /* Darker title color */
+  text-align: center;
+  font-size: 28px;
+}
+
+.modal-content form label {
+  display: block;
+  margin-bottom: 8px;
+  color: #555;
+  font-weight: bold;
+}
+
+.modal-content form input[type="text"],
+.modal-content form textarea {
+  width: calc(100% - 24px); /* Adjust for padding and border */
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #e0e0e0; /* Lighter border */
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.modal-content form input[type="text"]:focus,
+.modal-content form textarea:focus {
+  border-color: #888; /* Highlight on focus */
+  outline: none;
+}
+
+.modal-content form button[type="submit"] {
+  background-color: #007bff; /* Blue submit button */
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.modal-content form button[type="submit"]:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.button-group {
+  display: flex;
+  gap: 10px; /* ボタン間のスペース */
+  justify-content: flex-end; /* 右寄せ */
+  margin-top: 20px; /* 上の要素とのスペース */
+}
+
+.button-group button {
+  flex: 1; /* 利用可能なスペースを均等に分け合う */
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 16px;
+}
+
+.delete-button {
+  background-color: #dc3545; /* 赤色 */
+  color: white;
+}
+
+.delete-button:hover {
+  background-color: #c82333; /* 赤色のホバー */
+}
+
+/* Card Styles */
+.card-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background-color: #f6f6ea;
+  padding: 20px;
+  border-radius: 20px;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  height: 200px;
+}
+
+.card .emoji {
+  font-size: 40px;
+}
+
+.card .title {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.card .info {
+  color: #555;
+  font-size: 14px;
+}
+
+.card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.card-link:hover .card {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+input[type="checkbox"][disabled] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

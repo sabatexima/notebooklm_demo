@@ -1,0 +1,58 @@
+.back-button {
+    display: inline-block;
+    padding: 12px 24px;
+    margin: 0;
+    background-color: black;
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+    font-size: 16px;
+}
+
+.back-button:hover {
+    background-color: #0073e6;
+}
+
+.main-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #ddd;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.main-nav div { /* ナビゲーションボタンをまとめたdivのスタイル */
+    display: flex;
+    flex-grow: 1; /* 残りのスペースを埋める */
+    justify-content: center; /* 中央寄せ */
+}
+
+.nav-button {
+    display: inline-block;
+    padding: 12px 24px;
+    margin: 0 5px;
+    background-color: black;
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-button:hover {
+    background-color: #333;
+}
+
+.nav-button.active {
+    background-color: #eef2ff;
+    color: black;
+    border: 1px solid #d1d5ff;
+    font-weight: bold;
+    cursor: default;
+}

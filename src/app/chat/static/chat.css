@@ -1,20 +1,26 @@
 body {
     font-family: sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
+    background: #fefefe;
+    margin: 40px;
 }
 
 #chat-container {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 50px);
-    width: 100%;
-    background-color: #fff;
+    height: calc(100vh - 80px); /* bodyのmargin 40px * 2 を引く */
+    width: 100%; /* 親要素の幅いっぱいに */
+    background-color: #f6f6ea;
+    flex-grow: 1;
+    margin: 0; /* bodyでmarginを設定したので削除 */
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    position: relative; /* chat-formをabsoluteにするため */
+    margin-top: 60px; /* ナビゲーションバーの高さ分 */
 }
 
 #chat-log {
     flex-grow: 1;
-    padding: 20px;
+    padding: 20px 20px 80px 20px; /* chat-formの高さ分padding-bottomを追加 */
     overflow-y: auto;
 }
 
@@ -51,42 +57,36 @@ body {
     padding: 10px;
     border-top: 1px solid #eee;
     background-color: #fff;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    box-sizing: border-box;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
 }
 
 #user-input {
     flex-grow: 1;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    padding: 10px 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px;
     font-size: 16px;
+    transition: border-color 0.2s ease-in-out;
 }
 
 #chat-form button {
-    background-color: #0084ff;
+    background-color: black;
     color: white;
     border: none;
-    border-radius: 20px;
-    padding: 10px 20px;
-    margin-left: 10px;
-    cursor: pointer;
+    border-radius: 30px;
+    padding: 12px 24px;
     font-size: 16px;
+    cursor: pointer;
 }
 
 #chat-form button:hover {
     background-color: #0073e6;
 }
 
-.back-button {
-    display: inline-block;
-    padding: 10px 20px;
-    margin: 10px;
-    background-color: #0084ff;
-    color: white;
-    text-decoration: none;
-    border-radius: 20px;
-    font-size: 16px;
-}
 
-.back-button:hover {
-    background-color: #0073e6;
-}

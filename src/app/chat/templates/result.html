@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIチャット¥</title>
+    <title>まとめ結果¥</title>
     <link rel="stylesheet" href="{{ url_for('chat.static', filename='bar.css') }}">
-    <link rel="stylesheet" href="{{ url_for('chat.static', filename='chat.css') }}">
+    <link rel="stylesheet" href="{{ url_for('chat.static', filename='result.css') }}">
 </head>
 <body>
     <nav class="main-nav">
@@ -16,18 +16,7 @@
             <a href="/chat/result" class="nav-button {% if current_page == 'result' %}active{% endif %}">まとめ</a>
         </div>
     </nav>
-    <div id="chat-container">
-        <div id="chat-log">
-            <div class="message ai-message">
-                <p>こんにちは！</p>
-            </div>
-        </div>
-        <form id="chat-form">
-            <input type="text" id="user-input" placeholder="メッセージを入力..." autocomplete="off">
-            <button type="submit">送信</button>
-        </form>
+    <div id="result-container">
     </div>
-
-    <script src="{{ url_for('chat.static', filename='chat.js') }}"></script>
 </body>
 </html>

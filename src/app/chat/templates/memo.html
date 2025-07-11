@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>メモ追加</title>
+    <link rel="stylesheet" href="{{ url_for('chat.static', filename='bar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('chat.static', filename='memo.css') }}">
+</head>
+<body>
+    <nav class="main-nav">
+        <a href="/" class="back-button">戻る</a>
+        <div>
+            <a href="/chat/memo" class="nav-button {% if current_page == 'memo' %}active{% endif %}">メモ</a>
+            <a href="/chat/chat" class="nav-button {% if current_page == 'chat' %}active{% endif %}">チャット</a>
+            <a href="/chat/result" class="nav-button {% if current_page == 'result' %}active{% endif %}">まとめ</a>
+        </div>
+    </nav>
+
+    <div class="header">
+        <button class="btn-create" id="openCreateModal">＋ 新規作成</button>
+    </div>
+
+    <!-- 新規作成モーダル -->
+    <div id="createModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeCreateModal">&times;</span>
+            <h2>新規メモ作成</h2>
+            <form id="createMemoForm">
+                <label for="createTitle">タイトル:</label><br>
+                <input type="text" id="createTitle" name="title"><br><br>
+                <label for="createContent">内容:</label><br>
+                <textarea id="createContent" name="content" rows="5"></textarea><br><br>
+                <label for="createAskGemini">Geminiに聞く:</label>
+                <input type="checkbox" id="createAskGemini" name="ask_gemini"><br><br>
+                <button type="submit">作成</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 編集モーダル -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeEditModal">&times;</span>
+            <h2>メモ編集</h2>
+            <form id="editMemoForm">
+                <input type="hidden" id="editMemoId">
+                <label for="editTitle">タイトル:</label><br>
+                <input type="text" id="editTitle" name="title"><br><br>
+                <label for="editContent">内容:</label><br>
+                <textarea id="editContent" name="content" rows="5"></textarea><br><br>
+                <label for="editAskGemini">Geminiに聞く:</label>
+                <input type="checkbox" id="editAskGemini" name="ask_gemini" disabled><br><br>
+                <div class="button-group">
+                    <button type="submit">更新</button>
+                    <button type="button" id="deleteMemoBtn" class="delete-button">削除</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card-container">
+        {% for memo in memos %}
+        <div class="card-link" data-memo-id="{{ memo.id }}" data-memo-title="{{ memo.title }}" data-memo-content="{{ memo.content }}" data-memo-ask-gemini="{{ memo.ask_gemini | tojson }}">
+            <div class="card">
+                <div class="title">{{ memo.title|safe }}</div>
+                <div class="content">{{ memo.content[:40] ~ "…"|safe if memo.content|length > 40 else memo.content|safe }}</div>
+                <!-- <div class="content">{{ memo.content[:40] ~ "..."|safe }}</div> -->
+                <div class="info">{{ memo.date }}</div>
+                {% if memo.ask_gemini %}
+                <div class="gemini-status">Geminiに質問済み</div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script src="{{ url_for('chat.static', filename='memo.js') }}"></script>
+</body>
+</html>
