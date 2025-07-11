@@ -3,7 +3,10 @@ from flask import Blueprint,render_template,Flask, request, jsonify
 import app.chat.chatModel as chatModel
 
 # Blueprintを作成する
-chat = Blueprint("chat", __name__)
+chat = Blueprint("chat", __name__,
+                    template_folder='templates',
+                    static_folder='static',
+                    static_url_path='/chat/static')
 
 
 # ルートURLへのアクセスがあった場合にindex.htmlを返す
