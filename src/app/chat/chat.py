@@ -10,12 +10,14 @@ chat = Blueprint("chat", __name__,
 
 
 # ルートURLへのアクセスがあった場合にindex.htmlを返す
-@chat.route('/')
+@chat.route('/chat')
 def index():
-    return render_template('index.html')
+    title = request.args.get('title', 'チャット') # デフォルト値を設定
+    print(title)
+    return render_template('chat.html', title=title)
 
 # /chatへのPOSTリクエストがあった場合にチャットの応答を返す
-@chat.route('/chat', methods=['POST'])
+@chat.route('/chatAI', methods=['POST'])
 def chatting():
     # ユーザーからのメッセージを取得する
     user_message = request.json.get('message')

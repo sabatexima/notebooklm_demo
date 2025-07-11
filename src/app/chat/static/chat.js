@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
             userInput.value = '';
 
             // サーバーにチャットメッセージを送信
-            const response = await fetch('/chat', {
+            const response = await fetch('/chat/chatAI', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
