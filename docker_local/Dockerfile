@@ -9,7 +9,9 @@ RUN apt-get update && \
     ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
     apt-get clean
 
+# requirements.txtをコンテナにコピー
 COPY ./requirements.txt /
+# requirements.txtに記載のライブラリをインストール
 RUN pip install -r requirements.txt
 
 # タイムゾーンとロケール設定
