@@ -1,12 +1,25 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>はじめてのHTML</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIチャット</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <h1>こんにちは、世界！</h1>
-  <p>これは最初のHTMLページです。</p>
+
+    <div id="chat-container">
+        <div id="chat-log">
+            <div class="message ai-message">
+                <p>こんにちは！</p>
+            </div>
+        </div>
+        <form id="chat-form">
+            <input type="text" id="user-input" placeholder="メッセージを入力..." autocomplete="off">
+            <button type="submit">送信</button>
+        </form>
+    </div>
+
+    <script src="/static/script.js"></script>
 </body>
 </html>
-
