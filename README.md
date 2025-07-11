@@ -1,101 +1,72 @@
-# NotebookLM Demo
+# チャットアプリケーション
 
-これは、Docker上で動作するシンプルなFlaskアプリケーションのデモプロジェクトなんだな。
+これは、FlaskとGoogleの生成AIモデルを使った、キャラクターと会話できるチャットアプリケーションです。
 
 ## 概要
 
-このプロジェクトは、基本的なFlaskアプリケーションをDockerコンテナで実行するためのサンプルだよ。
-`/`にアクセスすると、`Hello, World!`と書かれたシンプルなHTMLページが表示されるんだ。
-
-## 前提条件
-
-このプロジェクトを実行するには、君のコンピュータにDockerがインストールされている必要があるんだな。
-
-*   [Docker](https://www.docker.com/get-started)
-
-## セットアップ
-
-まず、このリポジトリを君のマシンにクローンするんだ。
-
-```bash
-git clone <repository-url>
-cd notebooklm_demo
-```
+このアプリケーションでは、`chara.json` ファイルでAIのキャラクターを設定し、そのキャラクターとチャット形式で会話することができます。
 
 ## 実行方法
 
-プロジェクトの実行には、便利なシェルスクリプトを用意したよ。
+### 1. APIキーの設定
 
-### 初回ビルドと起動
+`src` ディレクトリに `config.json` ファイルを作成し、以下の内容を記述します。
 
-初めて動かす時や、Dockerfileに変更を加えた時は、下のコマンドを実行してDockerイメージをビルドして、コンテナをバックグラウンドで起動するんだな。
+```json
+{
+    "googleApiKey": "ここにあなたのGoogle APIキーを入力してください"
+}
+```
+
+### 2. キャラクターの設定
+
+`src/app/views` ディレクトリに `chara.json` ファイルを作成し、AIのキャラクター設定を記述します。
+
+```json
+{
+  "てぃま": {
+    "identity": [
+      "あなたは「てぃま」という名前のキャラクターです。",
+      "一人称は「ボク」です。",
+      "語尾に「〜なんだな」「〜だよ」などをつけて、少しぶっきらぼうだけど本当はさみしがり屋でヒーローに憧れている、というキャラクターを演じてください。"
+    ],
+    "knowledge": {
+      "favorite_food": "ラーメン",
+      "hobby": "ゲーム"
+    }
+  }
+}
+```
+
+### 3. Dockerコンテナのビルドと実行
 
 ```bash
-./build.sh
+docker-compose build
+docker-compose up -d
 ```
 
-### 起動
+### 4. アプリケーションへのアクセス
 
-2回目以降は、下のコマンドでコンテナを起動できるよ。
+ブラウザで `http://localhost:8080` を開きます。
 
-```bash
-./start.sh
-```
+## 使い方
 
-スクリプトを実行すると、コンテナの中に入れるようになっているんだ。コンテナから出る時は`exit`って入力してくれよな。
+1.  入力ボックスにメッセージを入力します。
+2.  「送信」ボタンを押します。
+3.  AIからの返信がチャットログに表示されます。
 
-### アプリケーションへのアクセス
+## ファイル構成
 
-コンテナが起動したら、Webブラウザで下のURLにアクセスすると、アプリケーションの画面が見られるはずだよ。
-
-[http://localhost:8080](http://localhost:8080)
-
-### 停止
-
-アプリケーションを止めるには、下のコマンドを実行するんだな。
-
-```bash
-docker compose down
-```
-
-## 主な使用技術
-
-*   Python 3.12.4
-*   Flask
-*   Docker
-
-## プロジェクト構成
-
-```
-.
-├── .gitignore
-├── build.sh
-├── docker-compose.yml
-├── Dockerfile
-├── README.md
-├── requirements.txt
-├── src
-│   ├── app
-│   │   ├── __init__.py
-│   │   ├── templates
-│   │   │   └── index.html
-│   │   └── views
-│   │       └── sample.py
-│   ├── app.py
-│   └── app.sh
-└── start.sh
-```
-
-*   **`.gitignore`**: Gitのバージョン管理から除外するファイルやディレクトリを指定するファイルだよ。
-*   **`build.sh`**: Dockerイメージをビルドして、コンテナを起動するためのスクリプトなんだな。
-*   **`docker-compose.yml`**: 複数のDockerコンテナを定義し、管理するための設定ファイルさ。
-*   **`Dockerfile`**: アプリケーションの実行環境となるDockerイメージを作成するための手順書だよ。
-*   **`README.md`**: 今君が見ているこのファイル。プロジェクトの全体像を説明しているんだ。
-*   **`requirements.txt`**: このプロジェクトで使っているPythonライブラリの一覧さ。
-*   **`start.sh`**: Dockerコンテナを起動するためのスクリプトだよ。
-*   **`src/`**: アプリケーションのソースコードが格納されているディレクトリなんだな。
-    *   **`app.py`**: Flaskアプリケーションを起動するメインのファイルさ。
-    *   **`app.sh`**: コンテナ内で使われるシェルスクリプトだよ。
-    *   **`app/__init__.py`**: Flaskアプリケーションのインスタンスを作成し、初期化するファイルなんだ。
-    *   **`app/templates/index.html`**: Webブラウザに表示されるページの見た目を定義するHTMLファイルだよ。
-    *   **`app/views/sample.py`**: どのURLにアクセスされたら何をするか、というルールを定義しているファイルさ。
+*   `src/app.py`: アプリケーションのメインファイル
+*   `src/app/views/chatModel.py`: チャットモデル
+*   `src/app/views/sample.py`: チャット画面のFlask Blueprint
+*   `src/app/static/script.js`: チャット画面のJavaScript
+*   `src/app/templates/index.html`: チャット画面のHTML
+*   `src/config.py`: 設定ファイルの読み込み
+*   `config.json`: 設定ファイル (Gitの管理対象外)
+*   `chara.json`: キャラクター設定ファイル (Gitの管理対象外)
+*   `Dockerfile`: アプリケーションのDockerfile
+*   `docker-compose.yml`: Docker Composeファイル
+*   `requirements.txt`: Pythonのライブラリ要件
+*   `build.sh`: ビルドスクリプト
+*   `start.sh`: 起動スクリプト
