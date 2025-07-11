@@ -1,145 +1,164 @@
+/* body要素のスタイル */
 body {
-  font-family: sans-serif;
-  background: #fefefe;
-  margin: 40px;
+  font-family: sans-serif; /* フォントをサンセリフに設定 */
+  background: #fefefe; /* 背景色を白に設定 */
+  margin: 40px; /* 全体に余白を設定 */
 }
 
+/* ヘッダー部分のスタイル */
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
+  display: flex; /* Flexboxを有効にし、子要素を横並びに配置 */
+  justify-content: space-between; /* 子要素を両端に配置 */
+  align-items: center; /* 子要素を垂直方向の中央に配置 */
+  margin-bottom: 30px; /* 下部に余白を設定 */
 }
 
+/* 新規作成ボタンのスタイル */
 .btn-create {
-  background-color: black;
-  color: white;
-  border: none;
-  border-radius: 30px;
-  padding: 12px 24px;
-  font-size: 16px;
-  cursor: pointer;
+  background-color: black; /* 背景色を黒に設定 */
+  color: white; /* 文字色を白に設定 */
+  border: none; /* ボーダーを削除 */
+  border-radius: 30px; /* 角を丸く設定 */
+  padding: 12px 24px; /* 内側の余白を設定 */
+  font-size: 16px; /* フォントサイズを設定 */
+  cursor: pointer; /* カーソルをポインターに設定 */
 }
 
+/* コントロール（アイコンボタンやソートボタン）のコンテナスタイル */
 .controls {
-  display: flex;
-  gap: 10px;
+  display: flex; /* Flexboxを有効にし、子要素を横並びに配置 */
+  gap: 10px; /* 子要素間のスペースを設定 */
 }
 
+/* アイコンボタンとソートボタンの共通スタイル */
 .icon-button,
 .sort-button {
-  padding: 10px 20px;
-  border-radius: 25px;
-  border: 1px solid #ddd;
-  background-color: white;
-  cursor: pointer;
+  padding: 10px 20px; /* 内側の余白を設定 */
+  border-radius: 25px; /* 角を丸く設定 */
+  border: 1px solid #ddd; /* 細いボーダーを設定 */
+  background-color: white; /* 背景色を白に設定 */
+  cursor: pointer; /* カーソルをポインターに設定 */
 }
 
+/* アクティブなアイコンボタンのスタイル */
 .icon-button.active {
-  background-color: #eef2ff;
-  border-color: #d1d5ff;
+  background-color: #eef2ff; /* 背景色を薄い青に設定 */
+  border-color: #d1d5ff; /* ボーダーの色を設定 */
 }
 
+/* カードのコンテナのスタイル */
 .card-container {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+  display: flex; /* Flexboxを有効にし、子要素を横並びに配置 */
+  gap: 20px; /* カード間のスペースを設定 */
+  flex-wrap: wrap; /* カードが収まらない場合に折り返し */
 }
 
+/* 個々のカードのスタイル */
 .card {
-  background-color: #f6f6ea;
-  padding: 20px;
-  border-radius: 20px;
-  width: 250px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  height: 200px;
+  background-color: #f6f6ea; /* 背景色を設定 */
+  padding: 20px; /* 内側の余白を設定 */
+  border-radius: 20px; /* 角を丸く設定 */
+  width: 250px; /* 幅を設定 */
+  display: flex; /* Flexboxを有効にし、子要素を縦並びに配置 */
+  flex-direction: column; /* 縦方向に配置 */
+  justify-content: space-between; /* 内容を上下に均等に配置 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* 影を設定 */
+  height: 200px; /* 高さを設定 */
 }
 
+/* カード内の絵文字のスタイル */
 .card .emoji {
-  font-size: 40px;
+  font-size: 40px; /* フォントサイズを設定 */
 }
 
+/* カード内のタイトルのスタイル */
 .card .title {
-  font-size: 20px;
-  font-weight: bold;
-  margin: 10px 0;
+  font-size: 20px; /* フォントサイズを設定 */
+  font-weight: bold; /* フォントを太く設定 */
+  margin: 10px 0; /* 上下部に余白を設定 */
 }
 
+/* カード内の情報のスタイル */
 .card .info {
-  color: #555;
-  font-size: 14px;
+  color: #555; /* 文字色を設定 */
+  font-size: 14px; /* フォントサイズを設定 */
 }
 
+/* カードリンクのスタイル */
 .card-link {
-  text-decoration: none;
-  color: inherit;
+  text-decoration: none; /* テキストの装飾（下線など）を削除 */
+  color: inherit; /* 親要素から色を継承 */
 }
 
+/* カードリンクにホバーした時のカードのスタイル */
 .card-link:hover .card {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transform: translateY(-5px); /* 上に少し移動 */
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* 影を強く設定 */
+  transition: transform 0.2s, box-shadow 0.2s; /* 移動と影の変化にアニメーションを適用 */
 }
 
-/* --- Modal Styles --- */
+/* --- モーダルのスタイル --- */
 .modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1000; /* Sit on top, higher than other content */
+  display: none; /* 初期状態では非表示 */
+  position: fixed; /* 画面に固定 */
+  z-index: 1000; /* 他の要素より手前に表示 */
   left: 0;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgba(0,0,0,0.6); /* Darker background w/ opacity */
-  display: flex; /* Add flex display */
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
+  width: 100%; /* 幅を100% */
+  height: 100%; /* 高さを100% */
+  overflow: auto; /* 内容がはみ出た場合にスクロールバーを表示 */
+  background-color: rgba(0,0,0,0.6); /* 半透明の黒い背景 */
+  display: flex; /* Flexboxを有効にし、内容を中央に配置 */
+  justify-content: center; /* 水平方向の中央揃え */
+  align-items: center; /* 垂直方向の中央揃え */
 }
 
+/* モーダルの内容部分のスタイル */
 .modal-content {
-  background-color: #ffffff; /* Pure white background */
-  padding: 30px; /* More padding */
-  border-radius: 15px; /* More rounded corners */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Stronger shadow */
-  width: 90%; /* Adjust width */
-  max-width: 500px; /* Max width for larger screens */
-  position: relative;
-  animation: fadeIn 0.3s ease-out; /* Simple fade-in animation */
+  background-color: #ffffff; /* 背景色を白に設定 */
+  padding: 30px; /* 内側の余白を設定 */
+  border-radius: 15px; /* 角を丸く設定 */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* 影を設定 */
+  width: 90%; /* 幅を設定 */
+  max-width: 500px; /* 最大幅を設定 */
+  position: relative; /* 相対位置指定 */
+  animation: fadeIn 0.3s ease-out; /* フェードインアニメーションを適用 */
 }
 
+/* フェードインアニメーションのキーフレーム */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* 閉じるボタンのスタイル */
 .close-button {
-  color: #888; /* Softer close button color */
-  float: right;
-  font-size: 32px; /* Larger close button */
-  font-weight: normal; /* Lighter font weight */
-  cursor: pointer;
-  position: absolute;
+  color: #888; /* 文字色を設定 */
+  float: right; /* 右にフロート */
+  font-size: 32px; /* フォントサイズを設定 */
+  font-weight: normal; /* フォントの太さを標準に設定 */
+  cursor: pointer; /* カーソルをポインターに設定 */
+  position: absolute; /* 絶対位置指定 */
   top: 15px;
   right: 20px;
 }
 
+/* 閉じるボタンにホバーまたはフォーカスした時のスタイル */
 .close-button:hover,
 .close-button:focus {
-  color: #333; /* Darker on hover */
+  color: #333; /* 文字色を濃く設定 */
 }
 
+/* モーダル内のh2要素のスタイル */
 .modal-content h2 {
   margin-top: 0;
-  margin-bottom: 25px; /* More space below title */
-  color: #333; /* Darker title color */
+  margin-bottom: 25px;
+  color: #333;
   text-align: center;
   font-size: 28px;
 }
 
+/* モーダル内のフォームのラベルのスタイル */
 .modal-content form label {
   display: block;
   margin-bottom: 8px;
@@ -147,23 +166,26 @@ body {
   font-weight: bold;
 }
 
+/* モーダル内のフォームのテキスト入力のスタイル */
 .modal-content form input[type="text"] {
-  width: calc(100% - 24px); /* Adjust for padding and border */
+  width: calc(100% - 24px);
   padding: 12px;
   margin-bottom: 20px;
-  border: 1px solid #e0e0e0; /* Lighter border */
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
   font-size: 16px;
   transition: border-color 0.2s ease-in-out;
 }
 
+/* モーダル内のフォームのテキスト入力にフォーカスした時のスタイル */
 .modal-content form input[type="text"]:focus {
-  border-color: #888; /* Highlight on focus */
+  border-color: #888;
   outline: none;
 }
 
+/* モーダル内のフォームの送信ボタンのスタイル */
 .modal-content form button[type="submit"] {
-  background-color: #007bff; /* Blue submit button */
+  background-color: #007bff;
   color: white;
   border: none;
   padding: 15px 25px;
@@ -174,34 +196,81 @@ body {
   transition: background-color 0.2s ease-in-out;
 }
 
+/* モーダル内のフォームの送信ボタンにホバーした時のスタイル */
 .modal-content form button[type="submit"]:hover {
-  background-color: #0056b3; /* Darker blue on hover */
+  background-color: #0056b3;
 }
 
-/* --- Detail Page --- */
+/* --- 詳細ページのスタイル --- */
 .detail-container {
   margin: 40px;
 }
 
+/* 戻るリンクのスタイル */
 .back-link {
   text-decoration: none;
   color: #555;
   font-weight: bold;
 }
 
+/* 詳細カードのスタイル */
 .detail-card {
   margin-top: 20px;
 }
 
+/* 詳細カード内の絵文字のスタイル */
 .detail-card .emoji {
   font-size: 60px;
 }
 
+/* 詳細カード内のタイトルのスタイル */
 .detail-card .title {
   font-size: 24px;
 }
 
+/* 詳細カード内の情報のスタイル */
 .detail-card .info {
   font-size: 16px;
 }
 
+/* モバイル向けスタイル */
+@media screen and (max-width: 768px) {
+  body {
+    margin: 20px; /* 余白を減らす */
+  }
+
+  .header {
+    flex-direction: column; /* 縦並びにする */
+    align-items: flex-start; /* 左寄せにする */
+  }
+
+  .btn-create {
+    width: 100%; /* 幅を100%にする */
+    margin-bottom: 10px; /* 下に余白を追加 */
+  }
+
+  .card-container {
+    flex-direction: column; /* カードを縦に並べる */
+    align-items: center; /* 中央揃えにする */
+  }
+
+  .card {
+    width: 90%; /* 幅を広げる */
+    max-width: 300px; /* 最大幅を設定 */
+  }
+
+  .modal-content {
+    width: 95%; /* モーダルの幅を広げる */
+    padding: 20px; /* パディングを減らす */
+  }
+
+  .modal-content h2 {
+    font-size: 24px; /* フォントサイズを調整 */
+  }
+
+  .modal-content form input[type="text"],
+  .modal-content form button[type="submit"] {
+    font-size: 14px; /* フォントサイズを調整 */
+    padding: 10px; /* パディングを調整 */
+  }
+}

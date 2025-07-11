@@ -3,41 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <title>カード一覧</title>
+  <!-- home.cssを読み込みます。カードのスタイルやレイアウトを定義しています。 -->
   <link rel="stylesheet" href="{{ url_for('select.static', filename='home.css') }}">
 </head>
 <body>
+  <!-- ヘッダー部分 -->
   <div class="header">
+    <!-- 新規作成モーダルを開くボタン。JavaScriptから操作されます。 -->
     <button class="btn-create" id="openCreateModal">＋ 新規作成</button>
   </div>
 
-  <!-- 新規作成モーダル -->
+  <!-- 新規作成モーダルウィンドウ。初期状態では非表示です。 -->
   <div id="createModal" class="modal">
+    <!-- モーダルの内容コンテナ -->
     <div class="modal-content">
+      <!-- モーダルを閉じるボタン -->
       <span class="close-button">&times;</span>
       <h2>新規カード作成</h2>
+      <!-- 新規カード作成フォーム。JavaScriptで送信処理がハンドリングされます。 -->
       <form id="createCardForm">
         <label for="emoji">絵文字:</label><br>
+        <!-- 絵文字入力フィールド。デフォルト値は👻です。 -->
         <input type="text" id="emoji" name="emoji" value="👻"><br><br>
         <label for="title">タイトル:</label><br>
+        <!-- タイトル入力フィールド -->
         <input type="text" id="title" name="title"><br><br>
+        <!-- カード作成を送信するボタン -->
         <button type="submit">作成</button>
       </form>
     </div>
   </div>
 
+  <!-- カードを表示するコンテナ -->
   <div class="card-container">
+    <!-- FlaskのJinja2テンプレート構文。
+         'cards'リストの各カードに対してループ処理を行います。 -->
     {% for card in cards %}
-    <a href="{{ url_for('chat.memo', title=card.title) }}" class="card-link">
+    <!-- 各カードをリンクとして表示します。
+         クリックすると'chat.memo'ルートに遷移し、カードのIDを'title'パラメータとして渡します。 -->
+    <a href="{{ url_for('chat.memo', title=card.id) }}" class="card-link">
+      <!-- 個々のカードの表示領域 -->
       <div class="card">
+        <!-- カードの絵文字を表示。'|safe'はHTMLエスケープを無効にします。 -->
         <div class="emoji">{{ card.emoji|safe }}</div>
+        <!-- カードのタイトルを表示。'|safe'はHTMLエスケープを無効にします。 -->
         <div class="title">{{ card.title|safe }}</div>
+        <!-- カードの情報（日付とソース数）を表示 -->
         <div class="info">{{ card.date }} ・ {{ card.source_count }}個のソース</div>
       </div>
     </a>
     {% endfor %}
   </div>
 
+  <!-- home.jsを読み込みます。モーダルの動作やカード作成のロジックを定義しています。 -->
   <script src="{{ url_for('select.static', filename='home.js') }}"></script>
 </body>
 </html>
-

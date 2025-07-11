@@ -1,3 +1,4 @@
+/* 戻るボタンのスタイル */
 .back-button {
     display: inline-block;
     padding: 12px 24px;
@@ -9,10 +10,12 @@
     font-size: 16px;
 }
 
+/* 戻るボタンにホバーした時のスタイル */
 .back-button:hover {
     background-color: #0073e6;
 }
 
+/* メインナビゲーションバーのスタイル */
 .main-nav {
     display: flex;
     justify-content: space-between;
@@ -27,12 +30,14 @@
     z-index: 1000;
 }
 
-.main-nav div { /* ナビゲーションボタンをまとめたdivのスタイル */
+/* ナビゲーションボタンをまとめたdivのスタイル */
+.main-nav div {
     display: flex;
-    flex-grow: 1; /* 残りのスペースを埋める */
-    justify-content: center; /* 中央寄せ */
+    flex-grow: 1;
+    justify-content: center;
 }
 
+/* ナビゲーションボタンのスタイル */
 .nav-button {
     display: inline-block;
     padding: 12px 24px;
@@ -45,10 +50,12 @@
     transition: background-color 0.3s ease;
 }
 
+/* ナビゲーションボタンにホバーした時のスタイル */
 .nav-button:hover {
     background-color: #333;
 }
 
+/* アクティブなナビゲーションボタンのスタイル */
 .nav-button.active {
     background-color: #eef2ff;
     color: black;

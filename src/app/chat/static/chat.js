@@ -1,26 +1,23 @@
-
-// DOMが読み込まれたら実行
+// DOMが完全に読み込まれて解析された後に実行されるイベントリスナー
 document.addEventListener('DOMContentLoaded', () => {
-    // チャットログ、チャットフォーム、ユーザー入力の要素を取得
+    // チャットログを表示する要素を取得
     const chatLog = document.getElementById('chat-log');
+    // チャットメッセージを送信するためのフォーム要素を取得
     const chatForm = document.getElementById('chat-form');
+    // ユーザーがメッセージを入力するテキストフィールド要素を取得
     const userInput = document.getElementById('user-input');
 
-    // チャットフォームの送信イベントをリッスン
+    // チャットフォームの送信イベントにイベントリスナーを追加
     chatForm.addEventListener('submit', async (e) => {
-        // デフォルトの送信動作をキャンセル
-        e.preventDefault();
-        // ユーザーの入力を取得
-        const userMessage = userInput.value.trim();
+        e.preventDefault(); // フォームのデフォルトの送信動作（ページのリロード）をキャンセル
+        const userMessage = userInput.value.trim(); // ユーザーの入力メッセージを取得し、前後の空白を削除
 
-        // ユーザーの入力がある場合
-        if (userMessage) {
-            // ユーザーのメッセージをチャットログに追加
-            appendMessage(userMessage, 'user');
-            // ユーザーの入力をクリア
-            userInput.value = '';
+        if (userMessage) { // ユーザーの入力メッセージが空でない場合
+            appendMessage(userMessage, 'user'); // ユーザーのメッセージをチャットログに追加
+            userInput.value = ''; // ユーザー入力フィールドをクリア
 
-            // サーバーにチャットメッセージを送信
+            // '/chat/chatAI'エンドポイントにPOSTリクエストを送信
+            // ユーザーのメッセージをJSON形式でサーバーに送信します。
             const response = await fetch('/chat/chatAI', {
                 method: 'POST',
                 headers: {
@@ -29,30 +26,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ message: userMessage }),
             });
 
-            // サーバーからの応答をJSONとして取得
-            const data = await response.json();
-            // AIの応答をチャットログに追加
-            appendMessage(data.reply, 'ai');
+            const data = await response.json(); // サーバーからの応答をJSONとして取得
+            appendMessage(data.reply, 'ai'); // AIの応答をチャットログに追加
         }
     });
 
     // メッセージをチャットログに追加する関数
     function appendMessage(message, sender) {
-        // 新しいメッセージ要素を作成
-        const messageElement = document.createElement('div');
-        // メッセージ要素にクラスを追加
+        const messageElement = document.createElement('div'); // 新しいdiv要素を作成
+        // メッセージ要素に'message'クラスと、送信者に応じたクラス（'user-message'または'ai-message'）を追加
         messageElement.classList.add('message', `${sender}-message`);
         
-        // 新しい段落要素を作成
-        const p = document.createElement('p');
-        // 段落要素にメッセージを設定
-        p.textContent = message;
-        // メッセージ要素に段落要素を追加
-        messageElement.appendChild(p);
+        const p = document.createElement('p'); // 新しいp（段落）要素を作成
+        p.textContent = message; // 段落要素にメッセージテキストを設定
+        messageElement.appendChild(p); // メッセージ要素に段落要素を追加
 
-        // チャットログにメッセージ要素を追加
-        chatLog.appendChild(messageElement);
-        // チャットログを一番下までスクロール
-        chatLog.scrollTop = chatLog.scrollHeight;
+        chatLog.appendChild(messageElement); // チャットログにメッセージ要素を追加
+        chatLog.scrollTop = chatLog.scrollHeight; // チャットログを一番下までスクロールして、最新のメッセージが見えるようにする
     }
 });

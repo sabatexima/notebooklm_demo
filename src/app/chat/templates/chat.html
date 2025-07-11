@@ -3,31 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIチャット¥</title>
+    <title>AIチャット</title>
+    <!-- bar.cssを読み込みます。ナビゲーションバーのスタイルを定義しています。 -->
     <link rel="stylesheet" href="{{ url_for('chat.static', filename='bar.css') }}">
+    <!-- chat.cssを読み込みます。チャット画面のスタイルを定義しています。 -->
     <link rel="stylesheet" href="{{ url_for('chat.static', filename='chat.css') }}">
 </head>
 <body>
+    <!-- メインナビゲーションバー -->
     <nav class="main-nav">
+        <!-- 戻るボタン。ルートパス('/')に戻ります。 -->
         <a href="/" class="back-button">戻る</a>
+        <!-- ナビゲーションボタンのグループ -->
         <div>
+            <!-- メモページへのリンク。現在のページが'memo'ならactiveクラスが付与されます。 -->
             <a href="/chat/memo" class="nav-button {% if current_page == 'memo' %}active{% endif %}">メモ</a>
+            <!-- チャットページへのリンク。現在のページが'chat'ならactiveクラスが付与されます。 -->
             <a href="/chat/chat" class="nav-button {% if current_page == 'chat' %}active{% endif %}">チャット</a>
+            <!-- まとめページへのリンク。現在のページが'result'ならactiveクラスが付与されます。 -->
             <a href="/chat/result" class="nav-button {% if current_page == 'result' %}active{% endif %}">まとめ</a>
         </div>
     </nav>
+    <!-- チャットコンテナ。チャットログと入力フォームを含みます。 -->
     <div id="chat-container">
+        <!-- チャットの会話ログを表示する領域 -->
         <div id="chat-log">
+            <!-- AIからの初期メッセージ -->
             <div class="message ai-message">
                 <p>こんにちは！</p>
             </div>
         </div>
+        <!-- チャットメッセージを送信するためのフォーム -->
         <form id="chat-form">
+            <!-- ユーザーがメッセージを入力するテキストフィールド -->
             <input type="text" id="user-input" placeholder="メッセージを入力..." autocomplete="off">
+            <!-- メッセージ送信ボタン -->
             <button type="submit">送信</button>
         </form>
     </div>
 
+    <!-- chat.jsを読み込みます。チャットの送受信ロジックを定義しています。 -->
     <script src="{{ url_for('chat.static', filename='chat.js') }}"></script>
 </body>
 </html>

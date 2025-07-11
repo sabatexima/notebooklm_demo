@@ -4,69 +4,103 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>メモ追加</title>
+    <!-- bar.cssを読み込みます。ナビゲーションバーのスタイルを定義しています。 -->
     <link rel="stylesheet" href="{{ url_for('chat.static', filename='bar.css') }}">
+    <!-- memo.cssを読み込みます。メモカードやモーダルのスタイルを定義しています。 -->
     <link rel="stylesheet" href="{{ url_for('chat.static', filename='memo.css') }}">
 </head>
 <body>
+    <!-- メインナビゲーションバー -->
     <nav class="main-nav">
+        <!-- 戻るボタン。ルートパス('/')に戻ります。 -->
         <a href="/" class="back-button">戻る</a>
+        <!-- ナビゲーションボタンのグループ -->
         <div>
+            <!-- メモページへのリンク。現在のページが'memo'ならactiveクラスが付与されます。 -->
             <a href="/chat/memo" class="nav-button {% if current_page == 'memo' %}active{% endif %}">メモ</a>
+            <!-- チャットページへのリンク。現在のページが'chat'ならactiveクラスが付与されます。 -->
             <a href="/chat/chat" class="nav-button {% if current_page == 'chat' %}active{% endif %}">チャット</a>
+            <!-- まとめページへのリンク。現在のページが'result'ならactiveクラスが付与されます。 -->
             <a href="/chat/result" class="nav-button {% if current_page == 'result' %}active{% endif %}">まとめ</a>
         </div>
     </nav>
 
+    <!-- ヘッダー部分 -->
     <div class="header">
+        <!-- 新規作成モーダルを開くボタン。JavaScriptから操作されます。 -->
         <button class="btn-create" id="openCreateModal">＋ 新規作成</button>
     </div>
 
-    <!-- 新規作成モーダル -->
+    <!-- 新規作成モーダルウィンドウ。初期状態では非表示です。 -->
     <div id="createModal" class="modal">
+        <!-- モーダルの内容コンテナ -->
         <div class="modal-content">
+            <!-- モーダルを閉じるボタン。JavaScriptから操作されます。 -->
             <span class="close-button" id="closeCreateModal">&times;</span>
             <h2>新規メモ作成</h2>
+            <!-- 新規メモ作成フォーム。JavaScriptで送信処理がハンドリングされます。 -->
             <form id="createMemoForm">
                 <label for="createTitle">タイトル:</label><br>
+                <!-- タイトル入力フィールド -->
                 <input type="text" id="createTitle" name="title"><br><br>
                 <label for="createContent">内容:</label><br>
+                <!-- 内容入力エリア -->
                 <textarea id="createContent" name="content" rows="5"></textarea><br><br>
                 <label for="createAskGemini">Geminiに聞く:</label>
+                <!-- Geminiに質問するかどうかのチェックボックス -->
                 <input type="checkbox" id="createAskGemini" name="ask_gemini"><br><br>
+                <!-- メモ作成を送信するボタン -->
                 <button type="submit">作成</button>
             </form>
         </div>
     </div>
 
-    <!-- 編集モーダル -->
+    <!-- 編集モーダルウィンドウ。初期状態では非表示です。 -->
     <div id="editModal" class="modal">
+        <!-- モーダルの内容コンテナ -->
         <div class="modal-content">
+            <!-- モーダルを閉じるボタン。JavaScriptから操作されます。 -->
             <span class="close-button" id="closeEditModal">&times;</span>
             <h2>メモ編集</h2>
+            <!-- メモ編集フォーム。JavaScriptで送信処理がハンドリングされます。 -->
             <form id="editMemoForm">
+                <!-- 編集中のメモのIDを保持する隠しフィールド -->
                 <input type="hidden" id="editMemoId">
                 <label for="editTitle">タイトル:</label><br>
+                <!-- 編集中のメモのタイトル入力フィールド -->
                 <input type="text" id="editTitle" name="title"><br><br>
                 <label for="editContent">内容:</label><br>
+                <!-- 編集中のメモの内容入力エリア -->
                 <textarea id="editContent" name="content" rows="5"></textarea><br><br>
                 <label for="editAskGemini">Geminiに聞く:</label>
+                <!-- 編集中のメモでGeminiに質問するかどうかのチェックボックス。disabled属性で編集不可です。 -->
                 <input type="checkbox" id="editAskGemini" name="ask_gemini" disabled><br><br>
+                <!-- ボタンのグループ -->
                 <div class="button-group">
+                    <!-- メモ更新を送信するボタン -->
                     <button type="submit">更新</button>
+                    <!-- メモ削除ボタン -->
                     <button type="button" id="deleteMemoBtn" class="delete-button">削除</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- メモカードを表示するコンテナ -->
     <div class="card-container">
+        <!-- FlaskのJinja2テンプレート構文。
+             'memos'リストの各メモに対してループ処理を行います。 -->
         {% for memo in memos %}
+        <!-- 各メモをリンクとして表示するdiv要素。
+             data属性にメモのID、タイトル、コンテンツ、Geminiに質問したかどうかの情報を保持しています。 -->
         <div class="card-link" data-memo-id="{{ memo.id }}" data-memo-title="{{ memo.title }}" data-memo-content="{{ memo.content }}" data-memo-ask-gemini="{{ memo.ask_gemini | tojson }}">
+            <!-- 個々のメモカードの表示領域 -->
             <div class="card">
+                <!-- メモのタイトルを表示。'|safe'はHTMLエスケープを無効にします。 -->
                 <div class="title">{{ memo.title|safe }}</div>
+                <!-- メモの内容を表示。40文字を超える場合は省略されます。'|safe'はHTMLエスケープを無効にします。 -->
                 <div class="content">{{ memo.content[:40] ~ "…"|safe if memo.content|length > 40 else memo.content|safe }}</div>
-                <!-- <div class="content">{{ memo.content[:40] ~ "..."|safe }}</div> -->
-                <div class="info">{{ memo.date }}</div>
+                <!-- Geminiに質問済みの場合に表示されるステータス -->
                 {% if memo.ask_gemini %}
                 <div class="gemini-status">Geminiに質問済み</div>
                 {% endif %}
@@ -75,6 +109,7 @@
         {% endfor %}
     </div>
 
+    <!-- memo.jsを読み込みます。モーダルの動作やメモの作成・編集・削除のロジックを定義しています。 -->
     <script src="{{ url_for('chat.static', filename='memo.js') }}"></script>
 </body>
 </html>

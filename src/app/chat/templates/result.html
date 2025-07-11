@@ -3,20 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>まとめ結果¥</title>
+    <title>まとめ結果</title>
+    <!-- bar.cssを読み込みます。ナビゲーションバーのスタイルを定義しています。 -->
     <link rel="stylesheet" href="{{ url_for('chat.static', filename='bar.css') }}">
+    <!-- result.cssを読み込みます。まとめ結果表示のスタイルを定義しています。 -->
     <link rel="stylesheet" href="{{ url_for('chat.static', filename='result.css') }}">
 </head>
 <body>
+    <!-- メインナビゲーションバー -->
     <nav class="main-nav">
+        <!-- 戻るボタン。ルートパス('/')に戻ります。 -->
         <a href="/" class="back-button">戻る</a>
+        <!-- ナビゲーションボタンのグループ -->
         <div>
+            <!-- メモページへのリンク。現在のページが'memo'ならactiveクラスが付与されます。 -->
             <a href="/chat/memo" class="nav-button {% if current_page == 'memo' %}active{% endif %}">メモ</a>
+            <!-- チャットページへのリンク。現在のページが'chat'ならactiveクラスが付与されます。 -->
             <a href="/chat/chat" class="nav-button {% if current_page == 'chat' %}active{% endif %}">チャット</a>
+            <!-- まとめページへのリンク。現在のページが'result'ならactiveクラスが付与されます。 -->
             <a href="/chat/result" class="nav-button {% if current_page == 'result' %}active{% endif %}">まとめ</a>
         </div>
     </nav>
+    <!-- まとめ結果を表示するコンテナ -->
     <div id="result-container">
+        <!-- ここにまとめ結果のテキストが表示されます。 -->
+        {{ summary_text }}
     </div>
 </body>
 </html>

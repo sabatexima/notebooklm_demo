@@ -1,34 +1,39 @@
+/* body要素のスタイル */
 body {
     font-family: sans-serif;
     background: #fefefe;
     margin: 40px;
 }
 
+/* チャットコンテナのスタイル */
 #chat-container {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 80px); /* bodyのmargin 40px * 2 を引く */
-    width: 100%; /* 親要素の幅いっぱいに */
+    height: calc(100vh - 80px); /* ビューポートの高さからbodyの上下のmarginを引いた高さ */
+    width: 100%;
     background-color: #f6f6ea;
     flex-grow: 1;
-    margin: 0; /* bodyでmarginを設定したので削除 */
+    margin: 0;
     border-radius: 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    position: relative; /* chat-formをabsoluteにするため */
+    position: relative;
     margin-top: 60px; /* ナビゲーションバーの高さ分 */
 }
 
+/* チャットログのスタイル */
 #chat-log {
     flex-grow: 1;
     padding: 20px 20px 80px 20px; /* chat-formの高さ分padding-bottomを追加 */
     overflow-y: auto;
 }
 
+/* メッセージの共通スタイル */
 .message {
     display: flex;
     margin-bottom: 15px;
 }
 
+/* メッセージ内のp要素のスタイル */
 .message p {
     margin: 0;
     padding: 10px 15px;
@@ -37,21 +42,25 @@ body {
     line-height: 1.4;
 }
 
+/* AIからのメッセージのスタイル */
 .ai-message p {
     background-color: #e1e1e1;
     border-bottom-left-radius: 4px;
 }
 
+/* ユーザーからのメッセージのスタイル */
 .user-message {
     justify-content: flex-end;
 }
 
+/* ユーザーからのメッセージ内のp要素のスタイル */
 .user-message p {
     background-color: #0084ff;
     color: white;
     border-bottom-right-radius: 4px;
 }
 
+/* チャットフォームのスタイル */
 #chat-form {
     display: flex;
     padding: 10px;
@@ -66,6 +75,7 @@ body {
     border-bottom-right-radius: 20px;
 }
 
+/* ユーザー入力フィールドのスタイル */
 #user-input {
     flex-grow: 1;
     border: 1px solid #e0e0e0;
@@ -75,6 +85,7 @@ body {
     transition: border-color 0.2s ease-in-out;
 }
 
+/* チャットフォームの送信ボタンのスタイル */
 #chat-form button {
     background-color: black;
     color: white;
@@ -85,8 +96,7 @@ body {
     cursor: pointer;
 }
 
+/* チャットフォームの送信ボタンにホバーした時のスタイル */
 #chat-form button:hover {
     background-color: #0073e6;
 }
-
-

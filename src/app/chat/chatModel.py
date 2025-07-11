@@ -1,4 +1,4 @@
-# 必要なライブラリをインポートする
+# 必要なライブラリをインポート
 import os
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.schema import (
@@ -6,25 +6,25 @@ from langchain.schema import (
     HumanMessage,
     SystemMessage
 )
-
 import json
 
 # チャット機能を提供するクラス
 class chat:
-
-    # 安全にモデルを呼び出す
-    def safe_invoke(self,model, messages):
+    def __init__(self,name):
+        # 設定ファイルを読み込む
+        self.chara = self.setChara(name)
+    # モデルを安全に呼び出す
+    # モデルの呼び出し中にエラーが発生しても、プログラムが停止しないようにします。
+    def safe_invoke(self, model, messages):
         try:
-            # モデルを呼び出す
             response = model.invoke(messages)
             return response
         except Exception as e:
-            # エラーが発生した場合はエラーメッセージを返す
             return {"error": str(e)}
 
-    # LLMモデルを設定する
-    def setLlm(self,name):
-        # model="gemini-1.5-pro"
+    # LLMモデルを設定
+    # 使用する大規模言語モデル（LLM）のインスタンスを生成します。
+    def setLlm(self, name):
         llm = ChatGoogleGenerativeAI(
             model=name,
             temperature=0,
@@ -33,37 +33,27 @@ class chat:
             max_retries=2,
         )
         return llm
-    # キャラクターを設定する
-    def setChara(self,name):
-        # JSONファイルを開いて読み込む
+
+    # キャラクターを設定
+    # chara.jsonファイルからキャラクターの情報を読み込みます。
+    def setChara(self, name):
         with open("app/chat/chara.json", "r", encoding="utf-8") as file:
             chara_data = json.load(file)
-
-        # "user" のデータを取得
-        # キャラクターの情報を取得
-        user = chara_data.get("てぃま", {}) 
+        user = chara_data.get(name, {}) 
         return user
 
-    # チャットを実行する
-    def chat(self,text):
-        # キャラクターを設定する
-        user = self.setChara("aa")
-        # LLMモデルを設定する
+    # チャットを実行
+    # ユーザーからのテキストメッセージを受け取り、AIの応答を生成します。
+    def chat(self, text,setting):
         llm = self.setLlm("gemini-2.5-flash")
 
-        # メッセージを作成する
+        # メッセージを作成
+        # システムメッセージとしてキャラクター情報、人間からのメッセージとしてユーザーのテキストを設定します。
         messages = [
-            SystemMessage(content=json.dumps(user, ensure_ascii=False)),
+            SystemMessage(content=json.dumps(self.chara, ensure_ascii=False) + ",前提知識：" +setting),
             HumanMessage(content=text)
         ]
 
-        # モデルを呼び出す
         response = self.safe_invoke(llm, messages)
-
-
-        # 応答のコンテンツを取得する
         chat_con = response.content
-
-        # 応答を返す
         return chat_con
-# chatlog.write(chat_log)
