@@ -16,14 +16,14 @@ body {
     margin: 0;
     border-radius: 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    position: relative;
+    /* position: relative; */ /* この行は不要になるので削除 */
     margin-top: 60px; /* ナビゲーションバーの高さ分 */
 }
 
 /* チャットログのスタイル */
 #chat-log {
     flex-grow: 1;
-    padding: 20px 20px 80px 20px; /* chat-formの高さ分padding-bottomを追加 */
+    padding: 20px 20px 100px 20px; /* chat-formの高さに合わせて調整 */
     overflow-y: auto;
 }
 
@@ -66,13 +66,15 @@ body {
     padding: 10px;
     border-top: 1px solid #eee;
     background-color: #fff;
-    position: absolute;
+    position: fixed; /* ここをfixedに変更 */
     bottom: 0;
     left: 0;
     right: 0;
     box-sizing: border-box;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 0; /* 角丸をなくす */
+    border-bottom-right-radius: 0; /* 角丸をなくす */
+    width: 100%; /* 幅を100%にする */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05); /* 上部に影を追加 */
 }
 
 /* ユーザー入力フィールドのスタイル */
@@ -99,4 +101,40 @@ body {
 /* チャットフォームの送信ボタンにホバーした時のスタイル */
 #chat-form button:hover {
     background-color: #0073e6;
+}
+
+/* モバイル向けスタイル */
+@media screen and (max-width: 768px) {
+  body {
+    margin: 10px;
+  }
+
+  #chat-container {
+    height: calc(100vh - 20px);
+    margin-top: 100px;
+  }
+
+  #chat-log {
+    padding: 15px 15px 90px 15px; /* モバイル版のchat-formの高さに合わせて調整 */
+  }
+
+  .message p {
+    max-width: 90%;
+    font-size: 14px;
+    word-wrap: break-word;
+  }
+
+  #chat-form {
+    padding: 8px;
+  }
+
+  #user-input {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  #chat-form button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
 }

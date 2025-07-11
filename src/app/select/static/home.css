@@ -236,41 +236,71 @@ body {
 /* モバイル向けスタイル */
 @media screen and (max-width: 768px) {
   body {
-    margin: 20px; /* 余白を減らす */
+    margin: 10px; /* 余白をなくす */
+    padding-top: 100px; /* ナビゲーションバーの高さに合わせて調整 */
   }
 
   .header {
     flex-direction: column; /* 縦並びにする */
     align-items: flex-start; /* 左寄せにする */
+    margin-bottom: 20px; /* 下に余白を追加 */
   }
 
   .btn-create {
     width: 100%; /* 幅を100%にする */
     margin-bottom: 10px; /* 下に余白を追加 */
+    padding: 10px 20px; /* パディングを調整 */
+    font-size: 14px; /* フォントサイズを調整 */
+    background-color: black; /* 背景色を黒に設定 */
   }
 
   .card-container {
     flex-direction: column; /* カードを縦に並べる */
     align-items: center; /* 中央揃えにする */
+    gap: 15px; /* カード間のスペースを調整 */
   }
 
   .card {
-    width: 90%; /* 幅を広げる */
-    max-width: 300px; /* 最大幅を設定 */
+    width: 95%; /* 幅を広げる */
+    min-width: 350px;
+    max-width: 350px; /* 最大幅を設定 */
+    height: 180px; /* 高さを固定 */
+    padding: 15px; /* パディングを調整 */
+    box-sizing: border-box; /* パディングを幅に含める */
+  }
+
+  .card .title,
+  .card .content {
+    white-space: nowrap; /* テキストを折り返さない */
+    overflow: hidden; /* はみ出た部分を隠す */
+    text-overflow: ellipsis; /* はみ出た部分を省略記号で表示 */
+  }
+
+
+  .card .emoji {
+    font-size: 32px; /* フォントサイズを調整 */
+  }
+
+  .card .title {
+    font-size: 14px; /* フォントサイズを調整 */
+  }
+
+  .card .info {
+    font-size: 12px; /* フォントサイズを調整 */
   }
 
   .modal-content {
-    width: 95%; /* モーダルの幅を広げる */
-    padding: 20px; /* パディングを減らす */
+    width: 98%; /* モーダルの幅を広げる */
+    padding: 30px; /* パディングを減らす */
   }
 
   .modal-content h2 {
-    font-size: 24px; /* フォントサイズを調整 */
+    font-size: 28px; /* フォントサイズを調整 */
   }
 
   .modal-content form input[type="text"],
   .modal-content form button[type="submit"] {
-    font-size: 14px; /* フォントサイズを調整 */
-    padding: 10px; /* パディングを調整 */
+    font-size: 18px; /* フォントサイズを調整 */
+    padding: 15px; /* パディングを調整 */
   }
 }

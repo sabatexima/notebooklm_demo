@@ -63,3 +63,33 @@
     font-weight: bold;
     cursor: default;
 }
+
+/* モバイル向けスタイル */
+@media screen and (max-width: 768px) {
+  .main-nav {
+    flex-direction: column; /* 縦並びにする */
+    align-items: flex-start; /* 左寄せにする */
+    padding: 8px; /* パディングを調整 */
+  }
+
+  .main-nav .back-button {
+    max-width: 120px; /* 最大幅を設定 */
+    text-align: center; /* テキストを中央揃えにする */
+    margin-bottom: 8px; /* 下に余白を追加 */
+    padding: 10px 20px; /* パディングを調整 */
+    font-size: 14px; /* フォントサイズを調整 */
+  }
+
+  .main-nav div {
+    width: 100%; /* 幅を100%にする */
+    justify-content: space-around; /* ボタンを均等に配置 */
+  }
+
+  .nav-button {
+    flex-grow: 1; /* 利用可能なスペースを均等に分け合う */
+    margin: 0 2px; /* 左右の余白を減らす */
+    padding: 10px 15px; /* パディングを調整 */
+    font-size: 14px; /* フォントサイズを調整 */
+    text-align: center; /* テキストを中央揃えにする */
+  }
+}

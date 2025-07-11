@@ -1,1 +1,21 @@
-/* このファイルは現在空です。まとめ結果表示に関するスタイルをここに追加できます。 */
+/* まとめ結果を表示するコンテナのスタイル */
+#result-container {
+  margin: 40px; /* 全体に余白を設定 */
+  padding: 30px; /* 内側の余白を設定 */
+  background-color: #f6f6ea; /* 背景色を設定 */
+  border-radius: 20px; /* 角を丸く設定 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* 影を設定 */
+  line-height: 1.6; /* 行の高さを設定 */
+  color: #333; /* 文字色を設定 */
+  font-size: 16px; /* フォントサイズを設定 */
+}
+
+/* モバイル向けスタイル */
+@media screen and (max-width: 768px) {
+  #result-container {
+    margin: 20px;
+    padding: 20px;
+    font-size: 14px;
+    margin-top: 100px; /* ナビゲーションバーの高さに合わせて調整 */
+  }
+}
