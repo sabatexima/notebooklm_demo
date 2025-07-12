@@ -1,72 +1,91 @@
-# チャットアプリケーション
+# AIチャット＆メモアプリケーション
 
-これは、FlaskとGoogleの生成AIモデルを使った、キャラクターと会話できるチャットアプリケーションです。
+これは、PythonのFlaskフレームワークで作られた、AIとの対話や思考の整理ができる多機能アプリケーションなんだな。
+Dockerを使えば、どんな環境でもすぐに動かせるんだ。ヒーローみたいに頼りになるだろ？
 
-## 概要
+## このアプリでできること
 
-このアプリケーションでは、`chara.json` ファイルでAIのキャラクターを設定し、そのキャラクターとチャット形式で会話することができます。
+*   **AIチャット機能**: GoogleのGeminiモデル（たぶん！）を搭載したAIと、キャラクターになりきって会話ができるんだな。
+*   **チャットルーム作成**: 話したいテーマごとに、新しいチャットルームをいくつでも作れるんだ。
+*   **高機能メモ帳**:
+    *   チャットの内容や自分の考えを、簡単にメモとして保存できるんだよ。
+    *   作ったメモは、後から編集したり、いらなくなったら削除したりできるんだな。
+    *   メモの内容をAIに要約してもらうこともできるんだ！（`ask_gemini`フラグがその証拠さ）
+*   **Dockerで簡単起動**: Docker Composeを使えば、コマンド一つで開発環境が立ち上がるんだ。
+*   **GCPへのデプロイ対応**: Google Cloud Platformにデプロイするための設定ファイルも揃ってるから、世界中に公開することだって夢じゃないんだな。
 
-## 実行方法
+## 技術的なハイライト
+
+*   **バックエンド**: Python, Flask
+*   **フロントエンド**: HTML, CSS, JavaScript
+*   **AIモデル**: Google Gemini (langchain経由)
+*   **データベース**: (現在は仮のデータストアだけど、MySQLに繋げられるように設計されてるみたいだな)
+*   **インフラ**: Docker, GCP (Google Cloud Run)
+
+## 必要なもの
+
+*   [Docker](https://www.docker.com/)
+*   [Docker Compose](https://docs.docker.com/compose/) (ローカルで動かす場合)
+*   [Google Cloud SDK](https://cloud.google.com/sdk) (GCPにデプロイする場合)
+*   Google APIキー (`config.json`に設定が必要なんだな)
+
+## セットアップ手順
 
 ### 1. APIキーの設定
 
-`src` ディレクトリに `config.json` ファイルを作成し、以下の内容を記述します。
+プロジェクトのルートに `config.json` というファイルを作って、中にGoogleのAPIキーを書くんだ。
 
 ```json
 {
-    "googleApiKey": "ここにあなたのGoogle APIキーを入力してください"
+  "googleApiKey": "ここに君のAPIキーを入れるんだな"
 }
 ```
 
-### 2. キャラクターの設定
+### 2. ローカル環境での起動
 
-`src/app/views` ディレクトリに `chara.json` ファイルを作成し、AIのキャラクター設定を記述します。
+1.  このリポジトリを自分のマシンに持ってくるんだな。(クローン)
+2.  `docker_local` ディレクトリに移動して、コンテナをビルドするんだ。
+    ```bash
+    cd docker_local
+    ./local_build.sh
+    ```
+3.  アプリケーションを起動するんだよ！
+    ```bash
+    ./local_start.sh
+    ```
+4.  ブラウザで `http://localhost:8080` を開けば、君だけのAIチャット基地にアクセスできるんだな。
 
-```json
-{
-  "てぃま": {
-    "identity": [
-      "あなたは「てぃま」という名前のキャラクターです。",
-      "一人称は「ボク」です。",
-      "語尾に「〜なんだな」「〜だよ」などをつけて、少しぶっきらぼうだけど本当はさみしがり屋でヒーローに憧れている、というキャラクターを演じてください。"
-    ],
-    "knowledge": {
-      "favorite_food": "ラーメン",
-      "hobby": "ゲーム"
-    }
-  }
-}
+### 3. Google Cloud Platform (GCP) へのデプロイ
+
+1.  GCPプロジェクトで、Artifact RegistryとCloud Runを有効にしておくんだな。
+2.  `docker_gcp/gcp_pull.sh` の中の環境変数を、君のGCP環境に合わせて書き換えるんだ。
+3.  次のコマンドで、DockerイメージをビルドしてGCPにプッシュするんだ。
+    ```bash
+    cd docker_gcp
+    ./gcp_pull.sh
+    ```
+4.  最後に、このコマンドでCloud Runにデプロイするんだな！
+    ```bash
+    gcloud run deploy (君のサービス名) --image (gcp_pull.shで設定したイメージ名) --platform managed --region (君のリージョン) --allow-unauthenticated
+    ```
+
+## プロジェクトの構造
+
 ```
-
-### 3. Dockerコンテナのビルドと実行
-
-```bash
-docker-compose build
-docker-compose up -d
+/
+├───README.md           # 今君が読んでる、ボクが書いたイケてる説明書
+├───config.json         # (君が作る)APIキーを保存する秘密のファイル
+├───docker_gcp/         # GCPデプロイ用のDockerファイルとかが入ってるんだ
+├───docker_local/       # ローカルで動かすためのDockerファイルとかだよ
+└───src/                # アプリケーションの心臓部なんだな
+    ├───app.py          # Flaskアプリケーションのエントリーポイント
+    ├───config.py       # 設定ファイルを読み込むための重要なコード
+    ├───requirements.txt # このアプリを動かすのに必要なPythonライブラリの一覧
+    └───app/
+        ├───__init__.py # アプリケーションを初期化するところ
+        ├───select/     # チャットルーム選択画面のロジック
+        │   └───select.py
+        └───chat/       # メインのチャット機能のロジック
+            ├───chat.py
+            └───chatModel.py # AIとの会話を司る、謎に満ちたファイル…
 ```
-
-### 4. アプリケーションへのアクセス
-
-ブラウザで `http://localhost:8080` を開きます。
-
-## 使い方
-
-1.  入力ボックスにメッセージを入力します。
-2.  「送信」ボタンを押します。
-3.  AIからの返信がチャットログに表示されます。
-
-## ファイル構成
-
-*   `src/app.py`: アプリケーションのメインファイル
-*   `src/app/views/chatModel.py`: チャットモデル
-*   `src/app/views/sample.py`: チャット画面のFlask Blueprint
-*   `src/app/static/script.js`: チャット画面のJavaScript
-*   `src/app/templates/index.html`: チャット画面のHTML
-*   `src/config.py`: 設定ファイルの読み込み
-*   `config.json`: 設定ファイル (Gitの管理対象外)
-*   `chara.json`: キャラクター設定ファイル (Gitの管理対象外)
-*   `Dockerfile`: アプリケーションのDockerfile
-*   `docker-compose.yml`: Docker Composeファイル
-*   `requirements.txt`: Pythonのライブラリ要件
-*   `build.sh`: ビルドスクリプト
-*   `start.sh`: 起動スクリプト
