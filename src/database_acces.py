@@ -59,15 +59,8 @@ def connect_with_connector() -> sqlalchemy.engine.base.Engine:
     )
     return pool
 
-from sqlalchemy import text
 
-# エンジン取得
-engine = connect_with_connector()
 
-# 接続テスト（例: 現在のユーザー名を取得）
-try:
-    with engine.connect() as conn:
-        result = conn.execute(text("SELECT CURRENT_USER()"))
-        print("✅ 接続成功：", result.fetchone()[0])
-except Exception as e:
-    print("接続失敗 ❌：", e)
+
+
+

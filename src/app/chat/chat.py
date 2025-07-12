@@ -2,6 +2,11 @@
 from flask import Blueprint, render_template, request, jsonify
 import app.chat.chatModel as chatModel
 from datetime import datetime
+from sqlalchemy import text
+import database_acces as da
+
+# エンジン取得
+engine = da.connect_with_connector()
 
 # Blueprintを作成
 # 'chat'という名前のBlueprintを定義し、関連するテンプレートや静的ファイルの場所を指定します。
@@ -13,11 +18,10 @@ chat = Blueprint("chat", __name__,
 # 仮のメモデータストア
 # アプリケーションが実行されている間だけデータを保持する、一時的なメモのリストです。
 # 実際のアプリケーションではデータベースを使用します。
-memos_data = [
-    {"id": 1, "title": "今日の出来事", "content": "今日はハンギョドンと遊んだんだな。楽しかったよ。", "date": "2025/07/12", "ask_gemini": False},
-    {"id": 2, "title": "新しいアイデア", "content": "ヒーローになるための秘策を考えたんだな。", "date": "2025/07/11", "ask_gemini": True},
-]
 
+
+memos_data = []
+folderid = 0
 # '/chat'パスへのGETリクエストを処理
 # chat.htmlテンプレートをレンダリングして返します。
 @chat.route('/chat')
@@ -29,8 +33,28 @@ def index():
 @chat.route('/memo')
 def memo():
     title = request.args.get('title', 'メモ') # デフォルト値を設定
-    print(title)
-    return render_template('memo.html', memos=memos_data, current_page='memo', title=title)
+    global folderid
+    folderid = int(title)
+    with engine.connect() as conn:
+        result = conn.execute(
+            text("SELECT * FROM memo WHERE folderid = :folderid"),
+            {"folderid": folderid}
+        )
+        memos = result.fetchall()
+        # 必要に応じて整形
+
+    memo_list = []
+    for row in memos:
+        memo_list.append({
+            "id": row.memoid,
+            "title": row.title,
+            "content": row.content,
+            "date": row.created_at,
+            "ask_gemini": row.gemini
+            # 他のカラムも必要に応じて
+        })
+        
+    return render_template('memo.html', memos = memo_list, current_page='memo', title=title)
 
 # '/result'パスへのGETリクエストを処理
 # result.htmlテンプレートをレンダリングして返します。
@@ -63,15 +87,30 @@ def create_memo():
 
     if not title or not content:
         return jsonify({"error": "Title and content are required"}), 400
-
+    
+    today = datetime.now().strftime("%Y/%m/%d")
     new_memo = {
-        "id": len(memos_data) + 1,
+        "id": len(memos_data),
         "title": title,
         "content": content,
-        "date": datetime.now().strftime("%Y/%m/%d"),
+        "date": today,
         "ask_gemini": ask_gemini
     }
     memos_data.append(new_memo)
+    with engine.begin() as conn:
+        global folderid
+        conn.execute(text("""
+            INSERT INTO memo (userid, folderid, title, content, gemini, created_at)
+            VALUES (:userid, :folderid, :title, :content, :gemini, :created_at)
+        """), {
+            "userid": 100,
+            "folderid": folderid,
+            "title": title,
+            "content": content,
+            "gemini": ask_gemini,
+            "created_at": today,
+        })
+
     return jsonify(new_memo), 201
 
 # '/api/memos/<int:memo_id>'パスへのPUTリクエストを処理

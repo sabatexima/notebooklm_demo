@@ -100,6 +100,8 @@
                 <div class="title">{{ memo.title|safe }}</div>
                 <!-- メモの内容を表示。40文字を超える場合は省略されます。'|safe'はHTMLエスケープを無効にします。 -->
                 <div class="content">{{ memo.content[:40] ~ "…"|safe if memo.content|length > 40 else memo.content|safe }}</div>
+                <!-- カードの情報（日付とソース数）を表示 -->
+                <div class="info">{{ memo.date }}</div>
                 <!-- Geminiに質問済みの場合に表示されるステータス -->
                 {% if memo.ask_gemini %}
                 <div class="gemini-status">Geminiに質問済み</div>

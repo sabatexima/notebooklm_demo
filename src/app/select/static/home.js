@@ -58,7 +58,7 @@ createForm.addEventListener('submit', async function(event) {
         <div class="card">
           <div class="emoji">${newCardData.emoji}</div>
           <div class="title">${newCardData.title}</div>
-          <div class="info">${newCardData.date} ・ ${newCardData.source_count}個のソース</div>
+          <div class="info">${newCardData.date}</div>
         </div>
       </a>
     `;
