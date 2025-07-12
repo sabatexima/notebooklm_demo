@@ -20,7 +20,6 @@ chat = Blueprint("chat", __name__,
 # 実際のアプリケーションではデータベースを使用します。
 
 
-memos_data = []
 folderid = 0
 # '/chat'パスへのGETリクエストを処理
 # chat.htmlテンプレートをレンダリングして返します。
@@ -68,7 +67,15 @@ def result():
 @chat.route('/chatAI', methods=['POST'])
 def chatting():
     user_message = request.json.get('message')
-    all_text = "\n".join(f"{memo['title']}: {memo['content']}" for memo in memos_data)
+    with engine.connect() as conn:
+        result = conn.execute(text("""
+            SELECT GROUP_CONCAT(CONCAT(title, ': ', content) SEPARATOR '\n\n') AS all_text
+            FROM memo
+            WHERE folderid = :folderid
+        """), {"folderid": folderid})
+
+        row = result.fetchall()
+        all_text = str(row)
     a = chatModel.chat("キャラ2")
     ai_message = a.chat(user_message,all_text)
     return jsonify({'reply': ai_message})
@@ -89,14 +96,7 @@ def create_memo():
         return jsonify({"error": "Title and content are required"}), 400
     
     today = datetime.now().strftime("%Y/%m/%d")
-    new_memo = {
-        "id": len(memos_data),
-        "title": title,
-        "content": content,
-        "date": today,
-        "ask_gemini": ask_gemini
-    }
-    memos_data.append(new_memo)
+
     with engine.begin() as conn:
         global folderid
         conn.execute(text("""
@@ -110,7 +110,17 @@ def create_memo():
             "gemini": ask_gemini,
             "created_at": today,
         })
-
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT * FROM memo"))
+    rows = result.fetchall()  # 全行取得
+    row = rows[-1]
+    new_memo = {
+        "id": row.memoid,
+        "title": row.title,
+        "content": row.content,
+        "date": row.created_at,
+        "ask_gemini": row.gemini
+    }
     return jsonify(new_memo), 201
 
 # '/api/memos/<int:memo_id>'パスへのPUTリクエストを処理
@@ -122,22 +132,63 @@ def update_memo(memo_id):
     content = data.get("content")
     ask_gemini_from_request = data.get("ask_gemini")
 
-    for memo in memos_data:
-        if memo["id"] == memo_id:
-            memo["title"] = title
-            memo["content"] = content
-            if ask_gemini_from_request is not None:
-                memo["ask_gemini"] = ask_gemini_from_request
-            return jsonify(memo), 200
-    return jsonify({"error": "Memo not found"}), 404
+    with engine.connect() as conn:
+        conn.execute(text("""
+            UPDATE memo
+            SET title = :title, content = :content
+            WHERE memoid = :memoid
+        """), {
+            "title": title,
+            "content": content,
+            "memoid": memo_id
+        })
+        conn.commit()  # 明示的にコミットが必要な場合（DBによる）
+    
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT * FROM memo WHERE memoid = :memoid"), {"memoid": memo_id})
+        row = result.fetchone()  # 一件だけ取得
+    memo = {
+        "id": row.memoid,
+        "title": row.title,
+        "content": row.content,
+        "date": row.created_at,
+        "ask_gemini": row.gemini
+    }
+
+    return jsonify(memo), 200
+
+    # return jsonify({"error": "Memo not found"}), 404
 
 # '/api/memos/<int:memo_id>'パスへのDELETEリクエストを処理
 # 指定されたIDのメモを削除します。
 @chat.route("/api/memos/<int:memo_id>", methods=["DELETE"])
 def delete_memo(memo_id):
-    global memos_data
-    original_len = len(memos_data)
-    memos_data = [memo for memo in memos_data if memo["id"] != memo_id]
-    if len(memos_data) < original_len:
-        return jsonify({"message": "Memo deleted"}), 200
-    return jsonify({"error": "Memo not found"}), 404
+    with engine.connect() as conn:
+        conn.execute(text("DELETE FROM memo WHERE memoid = :memoid"), {
+            "memoid": memo_id
+        })
+        conn.commit()
+
+
+    global folderid
+    with engine.connect() as conn:
+        result = conn.execute(
+            text("SELECT * FROM memo WHERE folderid = :folderid"),
+            {"folderid": folderid}
+        )
+        memos = result.fetchall()
+        # 必要に応じて整形
+
+    memo_list = []
+    for row in memos:
+        memo_list.append({
+            "id": row.memoid,
+            "title": row.title,
+            "content": row.content,
+            "date": row.created_at,
+            "ask_gemini": row.gemini
+            # 他のカラムも必要に応じて
+        })
+
+    
+    return jsonify({"message": "Memo deleted"}), 200
