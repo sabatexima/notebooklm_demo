@@ -11,8 +11,6 @@ import json
 # エンジン取得
 engine = da.connect_with_connector()
 
-# 本番 or 開発で切り替えたい場合
-IS_LOCAL = os.environ.get("FLASK_ENV") == "development"
 
 # Blueprintを作成
 # 'chat'という名前のBlueprintを定義し、関連するテンプレートや静的ファイルの場所を指定します。
@@ -36,10 +34,16 @@ GOOGLE_CLIENT_ID = auth_setting.get("client_id")
 #     redirect_uri="http://localhost:8080/callback"
 # )
 
+# flow = Flow.from_client_secrets_file(
+#     "auth.json",
+#     scopes=["https://www.googleapis.com/auth/userinfo.email", "openid"],
+#     redirect_uri="https://august-bot-462013-g2.appspot.com/callback"
+# )
+
 flow = Flow.from_client_secrets_file(
     "auth.json",
     scopes=["https://www.googleapis.com/auth/userinfo.email", "openid"],
-    redirect_uri="https://august-bot-462013-g2.appspot.com/callback"
+    redirect_uri="https://notelm-90502666611.asia-northeast1.run.app/callback"
 )
 
 @login.route("/")
