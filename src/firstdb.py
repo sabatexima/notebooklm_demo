@@ -12,7 +12,7 @@ try:
 
         conn.execute(text("""CREATE TABLE memo (
             memoid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            userid INT,
+            userid TEXT,
             folderid INT,
             title VARCHAR(50),
             content TEXT,
@@ -22,7 +22,7 @@ try:
         
         conn.execute(text("""CREATE TABLE  folder(
             folderid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            userid INT,
+            userid TEXT,
             title VARCHAR(50),
             content TEXT,
             created_at TEXT
@@ -30,7 +30,8 @@ try:
 
         conn.execute(text("""CREATE TABLE user (
             userid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(50)
+            usernum TEXT,
+            email VARCHAR(50)
         );"""))
 
         print("✅ 接続成功")

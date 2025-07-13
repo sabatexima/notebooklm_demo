@@ -1,7 +1,8 @@
 # 必要なライブラリをインポート
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, session
 from sqlalchemy import text
 import database_acces as da
+
 
 # エンジン取得
 engine = da.connect_with_connector()
@@ -19,9 +20,12 @@ cards = []
 # home.htmlテンプレートをレンダリングし、カードデータを渡します。
 @select.route("/")
 def index():
-
+    print(session["user_id"] )
     with engine.connect() as conn:
-        result = conn.execute(text("SELECT * FROM folder"))
+        result = conn.execute(text("""SELECT * FROM folder WHERE userid = :user_id
+            """), {
+                "user_id": session["user_id"] 
+            })
     rows = result.fetchall()  # 全行取得
     cards = []
     for row in rows:
@@ -41,21 +45,26 @@ def create_card_api():
     emoji = data["emoji"]
     title = data["title"]
     import datetime
+    print(session["user_id"])
     today = datetime.date.today().strftime("%Y/%m/%d")
     with engine.begin() as conn:
         conn.execute(text("""
             INSERT INTO folder ( userid, title, content, created_at)
             VALUES ( :userid, :title, :content, :created_at)
         """), {
-            "userid": 100,
+            "userid": session["user_id"],
             "title": emoji,
             "content": title,
             "created_at": today,
         })
     with engine.connect() as conn:
-        result = conn.execute(text("SELECT * FROM folder"))
+        result = conn.execute(text("""SELECT * FROM folder WHERE userid = :user_id
+            """), {
+                "user_id": session["user_id"] 
+            })
     rows = result.fetchall()  # 全行取得
-    row = rows[-1]
+    print(rows)
+    row = rows[0]
     new_card={
         "id": row.folderid,
         "emoji": row.title,

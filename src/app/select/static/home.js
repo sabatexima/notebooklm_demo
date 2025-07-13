@@ -39,12 +39,12 @@ createForm.addEventListener('submit', async function(event) {
 
   // '/api/cards'エンドポイントにPOSTリクエストを送信
   // 新しいカードデータ（絵文字、タイトル、ソース数）をJSON形式で送信します。
-  const response = await fetch('/api/cards', {
+  const response = await fetch('/select/api/cards', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ emoji, title, source_count: 1 })
+    body: JSON.stringify({ emoji, title })
   });
 
   // レスポンスが成功（HTTPステータスコードが200番台）した場合の処理

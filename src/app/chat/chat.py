@@ -1,5 +1,5 @@
 # 必要なライブラリをインポート
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, session
 import app.chat.chatModel as chatModel
 from datetime import datetime
 from sqlalchemy import text
@@ -31,13 +31,14 @@ def index():
 # URLのクエリパラメータから'title'を取得し、memo.htmlテンプレートをレンダリングして返します。
 @chat.route('/memo')
 def memo():
-    title = request.args.get('title', 'メモ') # デフォルト値を設定
+    folderid_ = request.args.get('title', 'メモ') # デフォルト値を設定
     global folderid
-    folderid = int(title)
+    if(folderid_.isnumeric()):
+        folderid = int(folderid_)
     with engine.connect() as conn:
         result = conn.execute(
-            text("SELECT * FROM memo WHERE folderid = :folderid"),
-            {"folderid": folderid}
+            text("SELECT * FROM memo WHERE folderid = :folderid and userid = userid"),
+            {"folderid": folderid,"userid": session["user_id"]}
         )
         memos = result.fetchall()
         # 必要に応じて整形
@@ -53,7 +54,7 @@ def memo():
             # 他のカラムも必要に応じて
         })
         
-    return render_template('memo.html', memos = memo_list, current_page='memo', title=title)
+    return render_template('memo.html', memos = memo_list, current_page='memo')
 
 # '/result'パスへのGETリクエストを処理
 # result.htmlテンプレートをレンダリングして返します。
@@ -71,8 +72,8 @@ def chatting():
         result = conn.execute(text("""
             SELECT GROUP_CONCAT(CONCAT(title, ': ', content) SEPARATOR '\n\n') AS all_text
             FROM memo
-            WHERE folderid = :folderid
-        """), {"folderid": folderid})
+            WHERE folderid = :folderid and userid = :userid
+        """), {"folderid": folderid, "userid": session["user_id"]})
 
         row = result.fetchall()
         all_text = str(row)
@@ -103,7 +104,7 @@ def create_memo():
             INSERT INTO memo (userid, folderid, title, content, gemini, created_at)
             VALUES (:userid, :folderid, :title, :content, :gemini, :created_at)
         """), {
-            "userid": 100,
+            "userid": session["user_id"],
             "folderid": folderid,
             "title": title,
             "content": content,
@@ -111,7 +112,10 @@ def create_memo():
             "created_at": today,
         })
     with engine.connect() as conn:
-        result = conn.execute(text("SELECT * FROM memo"))
+        result = conn.execute(text("""SELECT * FROM memo where userid = :user_id
+            """), {
+                "user_id": session["user_id"] 
+            })
     rows = result.fetchall()  # 全行取得
     row = rows[-1]
     new_memo = {
@@ -173,8 +177,8 @@ def delete_memo(memo_id):
     global folderid
     with engine.connect() as conn:
         result = conn.execute(
-            text("SELECT * FROM memo WHERE folderid = :folderid"),
-            {"folderid": folderid}
+            text("SELECT * FROM memo WHERE folderid = :folderid and userid = :userid"),
+            {"folderid": folderid,"userid": session["user_id"]}
         )
         memos = result.fetchall()
         # 必要に応じて整形
