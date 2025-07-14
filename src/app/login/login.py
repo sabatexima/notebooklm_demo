@@ -21,24 +21,13 @@ login = Blueprint("login", __name__,
 
 
 
-
 with open("auth.json", "r") as f:
     auth_setting = json.load(f)
 
 GOOGLE_CLIENT_ID = auth_setting.get("client_id")
 
-# os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
-# flow = Flow.from_client_secrets_file(
-#     "auth.json",
-#     scopes=["https://www.googleapis.com/auth/userinfo.email", "openid"],
-#     redirect_uri="http://localhost:8080/callback"
-# )
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
-# flow = Flow.from_client_secrets_file(
-#     "auth.json",
-#     scopes=["https://www.googleapis.com/auth/userinfo.email", "openid"],
-#     redirect_uri="https://august-bot-462013-g2.appspot.com/callback"
-# )
 
 flow = Flow.from_client_secrets_file(
     "auth.json",
@@ -68,6 +57,7 @@ def index():
                 conn.commit()
         return redirect(url_for("select.index"))
     return '<a href="/loging">Googleでログイン</a>'
+    # return redirect(url_for("select.index"))
 
 @login.route("/loging")
 def loging():
