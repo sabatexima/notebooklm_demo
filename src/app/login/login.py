@@ -35,6 +35,11 @@ flow = Flow.from_client_secrets_file(
     redirect_uri="https://notelm-90502666611.asia-northeast1.run.app/callback"
 )
 
+# flow = Flow.from_client_secrets_file(
+#     "auth.json",
+#     scopes=["https://www.googleapis.com/auth/userinfo.email", "openid"],
+#     redirect_uri="http://localhost:8080/callback"
+# )
 
 
 @login.route("/")
