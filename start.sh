@@ -1,18 +1,18 @@
 #!/bin/bash
 
-# GCP フルスタック セットアップスクリプト
-# 使用方法: bash ./start.sh
+# GCP フルスタック セットアップスクリプト（PROJECT_ID・課金設定修正版）
+# 使用方法: ./setup-gcp-fullstack-modified.sh
 
 set -e  # エラーが発生した場合にスクリプトを停止
 
 # 設定変数
 PROJECT_ID="project-$(date +%Y%m%d%H%M)"
-PROJECT_NAME="My Docker Project"
-REPOSITORY_NAME="my-docker-repo"
+PROJECT_NAME="NoteLM-$(date +%Y%m%d%H%M)"
+REPOSITORY_NAME="my-app-repo"
 LOCATION="asia-northeast1"
 REPOSITORY_FORMAT="docker"
-DESCRIPTION="My Docker repository"
-BILLING_ACCOUNT_ID="019B70-7E6EAD-7BF631"
+DESCRIPTION="My application repository"
+BILLING_ACCOUNT_ID=""  # 実行時に必ず入力を求める
 
 # アプリケーション設定
 IMAGE_NAME="my-app"
@@ -24,8 +24,8 @@ CLOUD_RUN_REGION="asia-northeast1"
 SQL_INSTANCE_NAME="my-sql-instance"
 SQL_DATABASE_NAME="my_database"
 SQL_USER="app_user"
-SQL_PASSWORD="$(openssl rand -base64 32)"  # ランダムパスワード生成
-SQL_TIER="db-f1-micro"  # 開発用の小さなインスタンス
+SQL_PASSWORD="$(openssl rand -base64 32)"
+SQL_TIER="db-f1-micro"
 SQL_REGION="asia-northeast1"
 
 # 色付きの出力用
@@ -52,6 +52,82 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+# Docker設定チェック
+check_docker_setup() {
+    log_info "Docker設定をチェック中..."
+    
+    # Dockerコマンドの存在確認
+    if ! command -v docker &> /dev/null; then
+        log_error "Dockerコマンドが見つかりません。"
+        echo ""
+        echo "🐳 Docker設定方法:"
+        echo "1. Docker Desktop for Windows を使用する場合:"
+        echo "   - Docker Desktop を起動"
+        echo "   - Settings > Resources > WSL Integration を開く"
+        echo "   - 'Enable integration with my default WSL distro' をチェック"
+        echo "   - 使用しているWSL2ディストリビューションをチェック"
+        echo "   - Apply & Restart をクリック"
+        echo ""
+        echo "2. WSL2内に直接Dockerをインストールする場合:"
+        echo "   curl -fsSL https://get.docker.com | sh"
+        echo "   sudo usermod -aG docker \$USER"
+        echo "   newgrp docker"
+        echo ""
+        echo "設定完了後、再度このスクリプトを実行してください。"
+        exit 1
+    fi
+    
+    # Docker デーモンの確認
+    if ! docker info &> /dev/null; then
+        log_error "Docker デーモンが起動していません。"
+        echo ""
+        echo "🔧 Docker デーモンの起動方法:"
+        echo "1. Docker Desktop を使用している場合:"
+        echo "   - Docker Desktop を起動してください"
+        echo ""
+        echo "2. WSL2内でDockerサービスを使用している場合:"
+        echo "   sudo service docker start"
+        echo ""
+        echo "3. systemd を使用している場合:"
+        echo "   sudo systemctl start docker"
+        echo ""
+        read -p "Docker Desktop を起動しましたか？ (y/n): " docker_ready
+        if [ "$docker_ready" != "y" ]; then
+            exit 1
+        fi
+        
+        # 再度チェック
+        if ! docker info &> /dev/null; then
+            log_error "Docker デーモンにアクセスできません。"
+            exit 1
+        fi
+    fi
+    
+    # Docker権限の確認
+    if ! docker ps &> /dev/null; then
+        log_error "Docker権限がありません。"
+        echo ""
+        echo "🔐 Docker権限の設定:"
+        echo "sudo usermod -aG docker \$USER"
+        echo "newgrp docker"
+        echo ""
+        echo "または、一時的にsudoを使用:"
+        echo "sudo docker ..."
+        echo ""
+        read -p "sudoを使用してDockerを実行しますか？ (y/n): " use_sudo
+        if [ "$use_sudo" = "y" ]; then
+            DOCKER_CMD="sudo docker"
+        else
+            exit 1
+        fi
+    else
+        DOCKER_CMD="docker"
+    fi
+    
+    log_success "Docker設定チェック完了"
+    echo "Docker version: $(docker --version)"
+}
+
 # 前提条件チェック
 check_prerequisites() {
     log_info "前提条件をチェック中..."
@@ -62,11 +138,8 @@ check_prerequisites() {
         exit 1
     fi
     
-    # Docker コマンドの存在確認
-    if ! command -v docker &> /dev/null; then
-        log_error "docker コマンドが見つかりません。"
-        exit 1
-    fi
+    # Docker設定チェック
+    check_docker_setup
     
     # Dockerfileの存在確認
     if [ ! -f "$DOCKERFILE_PATH" ]; then
@@ -100,18 +173,24 @@ FROM node:16-alpine
 
 WORKDIR /app
 
-# package.jsonがある場合のサンプル
-# COPY package*.json ./
-# RUN npm install
-
-# アプリケーションコードをコピー
-COPY . .
+# 簡単なHTTPサーバーを作成
+RUN echo 'const http = require("http"); \
+const server = http.createServer((req, res) => { \
+  res.writeHead(200, {"Content-Type": "application/json"}); \
+  res.end(JSON.stringify({ \
+    message: "Hello from Cloud Run!", \
+    timestamp: new Date().toISOString(), \
+    environment: process.env.NODE_ENV || "development", \
+    project: process.env.PROJECT_ID || "unknown" \
+  })); \
+}); \
+const port = process.env.PORT || 8080; \
+server.listen(port, () => { \
+  console.log(`Server running on port ${port}`); \
+});' > server.js
 
 # ポート8080でリッスン（Cloud Runのデフォルト）
 EXPOSE 8080
-
-# 簡単なHTTPサーバー
-RUN echo 'const http = require("http"); const server = http.createServer((req, res) => { res.writeHead(200, {"Content-Type": "text/plain"}); res.end("Hello from Cloud Run!"); }); server.listen(8080, () => { console.log("Server running on port 8080"); });' > server.js
 
 CMD ["node", "server.js"]
 EOF
@@ -119,40 +198,93 @@ EOF
     log_success "サンプルDockerfileを作成しました: $DOCKERFILE_PATH"
 }
 
-# 課金アカウント設定
+# 課金アカウント設定（必須入力版）
 setup_billing() {
     log_info "課金アカウント設定中..."
     
+    # 課金アカウント一覧を取得
     local billing_accounts=$(gcloud billing accounts list --format="value(name,displayName)" --filter="open:true")
     
     if [ -z "$billing_accounts" ]; then
         log_error "利用可能な課金アカウントが見つかりません。"
+        echo ""
+        echo "🔧 課金アカウントの作成方法:"
+        echo "1. Google Cloud Console にアクセス: https://console.cloud.google.com/billing"
+        echo "2. 課金アカウントを作成"
+        echo "3. 支払い方法を設定"
+        echo ""
+        echo "課金アカウント作成後、再度このスクリプトを実行してください。"
         exit 1
     fi
     
+    # 課金アカウントが未指定の場合、必ず選択を求める
     if [ -z "$BILLING_ACCOUNT_ID" ]; then
+        echo ""
+        echo "==========================================="
+        echo "🏦 課金アカウントの選択"
+        echo "==========================================="
+        echo ""
         echo "利用可能な課金アカウント:"
-        echo "$billing_accounts" | nl -w2 -s'. '
+        echo "$billing_accounts" | nl -w2 -s'. ' | while read line; do
+            echo "  $line"
+        done
         echo ""
         
-        read -p "課金アカウントを選択してください (番号): " selection
-        BILLING_ACCOUNT_ID=$(echo "$billing_accounts" | sed -n "${selection}p" | cut -d$'\t' -f1)
-        
-        if [ -z "$BILLING_ACCOUNT_ID" ]; then
-            log_error "無効な選択です。"
-            exit 1
-        fi
+        while true; do
+            read -p "課金アカウントを選択してください (番号を入力): " selection
+            
+            # 入力が数値かチェック
+            if ! [[ "$selection" =~ ^[0-9]+$ ]]; then
+                echo "❌ 数値を入力してください"
+                continue
+            fi
+            
+            # 選択された課金アカウントを取得
+            BILLING_ACCOUNT_ID=$(echo "$billing_accounts" | sed -n "${selection}p" | cut -d$'\t' -f1)
+            
+            if [ -z "$BILLING_ACCOUNT_ID" ]; then
+                echo "❌ 無効な選択です。1-$(echo "$billing_accounts" | wc -l) の範囲で入力してください"
+                continue
+            fi
+            
+            # 選択された課金アカウントの表示名を取得
+            local display_name=$(echo "$billing_accounts" | sed -n "${selection}p" | cut -d$'\t' -f2)
+            
+            echo ""
+            echo "選択された課金アカウント:"
+            echo "  ID: $BILLING_ACCOUNT_ID"
+            echo "  名前: $display_name"
+            echo ""
+            read -p "この課金アカウントを使用しますか？ (y/n): " confirm
+            
+            if [ "$confirm" = "y" ]; then
+                break
+            else
+                BILLING_ACCOUNT_ID=""
+                continue
+            fi
+        done
     fi
     
-    log_info "選択された課金アカウント: $BILLING_ACCOUNT_ID"
+    log_success "課金アカウントを設定しました: $BILLING_ACCOUNT_ID"
 }
 
 # プロジェクト作成
 create_project() {
     log_info "プロジェクト作成中: $PROJECT_ID"
     
+    # プロジェクトの存在確認
     if gcloud projects describe $PROJECT_ID &> /dev/null; then
         log_warning "プロジェクト $PROJECT_ID は既に存在します"
+        echo ""
+        read -p "既存のプロジェクトを使用しますか？ (y/n): " use_existing
+        if [ "$use_existing" != "y" ]; then
+            # 新しいプロジェクトIDを生成
+            PROJECT_ID="project-$(date +%Y%m%d%H%M)-$(openssl rand -hex 3)"
+            log_info "新しいプロジェクトIDを生成しました: $PROJECT_ID"
+            gcloud projects create $PROJECT_ID --name="$PROJECT_NAME"
+            log_success "プロジェクト $PROJECT_ID を作成しました"
+        fi
     else
         gcloud projects create $PROJECT_ID --name="$PROJECT_NAME"
         log_success "プロジェクト $PROJECT_ID を作成しました"
@@ -170,10 +302,24 @@ set_project() {
 link_billing() {
     log_info "課金アカウントをプロジェクトに紐付け中..."
     
+    # 既に課金アカウントが設定されているかチェック
     local current_billing=$(gcloud billing projects describe $PROJECT_ID --format="value(billingAccountName)" 2>/dev/null || echo "")
     
     if [ -n "$current_billing" ]; then
-        log_warning "課金アカウントは既に設定されています"
+        log_warning "課金アカウントは既に設定されています: $current_billing"
+        
+        # 異なる課金アカウントが設定されている場合
+        if [ "$current_billing" != "billingAccounts/$BILLING_ACCOUNT_ID" ]; then
+            echo ""
+            echo "現在の課金アカウント: $current_billing"
+            echo "選択した課金アカウント: billingAccounts/$BILLING_ACCOUNT_ID"
+            echo ""
+            read -p "課金アカウントを変更しますか？ (y/n): " change_billing
+            if [ "$change_billing" = "y" ]; then
+                gcloud billing projects link $PROJECT_ID --billing-account=$BILLING_ACCOUNT_ID
+                log_success "課金アカウントを変更しました"
+            fi
+        fi
     else
         gcloud billing projects link $PROJECT_ID --billing-account=$BILLING_ACCOUNT_ID
         log_success "課金アカウントを紐付けました"
@@ -194,6 +340,7 @@ enable_apis() {
     )
     
     for api in "${apis[@]}"; do
+        log_info "API有効化中: $api"
         gcloud services enable "$api"
         log_success "$api を有効化しました"
     done
@@ -221,8 +368,15 @@ create_repository() {
 setup_docker_auth() {
     log_info "Docker認証設定中..."
     
-    gcloud auth configure-docker ${LOCATION}-docker.pkg.dev --quiet
-    log_success "Docker認証を設定しました"
+    if gcloud auth configure-docker ${LOCATION}-docker.pkg.dev --quiet; then
+        log_success "Docker認証を設定しました"
+    else
+        log_error "Docker認証の設定に失敗しました"
+        echo ""
+        echo "🔐 手動でDocker認証を設定:"
+        echo "gcloud auth configure-docker ${LOCATION}-docker.pkg.dev"
+        exit 1
+    fi
 }
 
 # Dockerイメージのビルドとプッシュ
@@ -233,13 +387,25 @@ build_and_push_image() {
     
     # イメージビルド
     log_info "Dockerイメージをビルド中..."
-    docker build ./ -t "$image_uri" -f "$DOCKERFILE_PATH"
-    log_success "Dockerイメージをビルドしました"
+    echo "実行コマンド: ${DOCKER_CMD} build ./ -t \"$image_uri\" -f \"$DOCKERFILE_PATH\""
+    
+    if ${DOCKER_CMD} build ./ -t "$image_uri" -f "$DOCKERFILE_PATH"; then
+        log_success "Dockerイメージをビルドしました"
+    else
+        log_error "Dockerイメージのビルドに失敗しました"
+        exit 1
+    fi
     
     # イメージプッシュ
     log_info "Dockerイメージをプッシュ中..."
-    docker push "$image_uri"
-    log_success "Dockerイメージをプッシュしました: $image_uri"
+    echo "実行コマンド: ${DOCKER_CMD} push \"$image_uri\""
+    
+    if ${DOCKER_CMD} push "$image_uri"; then
+        log_success "Dockerイメージをプッシュしました: $image_uri"
+    else
+        log_error "Dockerイメージのプッシュに失敗しました"
+        exit 1
+    fi
     
     # グローバル変数に保存
     IMAGE_URI="$image_uri"
@@ -290,7 +456,7 @@ deploy_to_cloud_run() {
         --platform=managed \
         --region=$CLOUD_RUN_REGION \
         --allow-unauthenticated \
-        --set-env-vars="DB_HOST=/cloudsql/$connection_name,DB_NAME=$SQL_DATABASE_NAME,DB_USER=$SQL_USER,DB_PASSWORD=$SQL_PASSWORD" \
+        --set-env-vars="PROJECT_ID=$PROJECT_ID,DB_HOST=/cloudsql/$connection_name,DB_NAME=$SQL_DATABASE_NAME,DB_USER=$SQL_USER,DB_PASSWORD=$SQL_PASSWORD" \
         --add-cloudsql-instances="$connection_name" \
         --port=8080 \
         --memory=512Mi \
@@ -322,6 +488,7 @@ test_sql_connection() {
     local connection_name="${PROJECT_ID}:${SQL_REGION}:${SQL_INSTANCE_NAME}"
     
     log_info "Cloud SQL接続情報:"
+    echo "  プロジェクト: $PROJECT_ID"
     echo "  インスタンス名: $SQL_INSTANCE_NAME"
     echo "  データベース名: $SQL_DATABASE_NAME"
     echo "  ユーザー名: $SQL_USER"
@@ -343,11 +510,12 @@ test_sql_connection() {
 show_final_results() {
     echo ""
     echo "==========================================="
-    log_success "フルスタックセットアップ完了！"
+    log_success "🎉 フルスタックセットアップ完了！"
     echo "==========================================="
     echo ""
     echo "📋 セットアップ結果:"
     echo "  プロジェクト ID: $PROJECT_ID"
+    echo "  課金アカウント: $BILLING_ACCOUNT_ID"
     echo "  リポジトリ名: $REPOSITORY_NAME"
     echo "  イメージ URI: $IMAGE_URI"
     echo "  Cloud Run サービス: $SERVICE_NAME"
@@ -372,8 +540,8 @@ show_final_results() {
     echo "  gcloud sql connect $SQL_INSTANCE_NAME --user=$SQL_USER --database=$SQL_DATABASE_NAME"
     echo ""
     echo "  # 新しいイメージデプロイ"
-    echo "  docker build ./ -t ${IMAGE_URI} -f $DOCKERFILE_PATH"
-    echo "  docker push ${IMAGE_URI}"
+    echo "  ${DOCKER_CMD} build ./ -t ${IMAGE_URI} -f $DOCKERFILE_PATH"
+    echo "  ${DOCKER_CMD} push ${IMAGE_URI}"
     echo "  gcloud run deploy $SERVICE_NAME --image=${IMAGE_URI} --region=$CLOUD_RUN_REGION"
     echo ""
     echo "🌐 アプリケーションアクセス:"
@@ -390,6 +558,7 @@ save_credentials() {
 # 生成日時: $(date)
 
 PROJECT_ID="$PROJECT_ID"
+BILLING_ACCOUNT_ID="$BILLING_ACCOUNT_ID"
 REPOSITORY_NAME="$REPOSITORY_NAME"
 IMAGE_URI="$IMAGE_URI"
 SERVICE_NAME="$SERVICE_NAME"
@@ -407,8 +576,8 @@ gcloud sql connect $SQL_INSTANCE_NAME --user=$SQL_USER --database=$SQL_DATABASE_
 gcloud run services logs read $SERVICE_NAME --region=$CLOUD_RUN_REGION
 
 # 新しいイメージのデプロイ:
-docker build ./ -t ${IMAGE_URI} -f $DOCKERFILE_PATH
-docker push ${IMAGE_URI}
+${DOCKER_CMD} build ./ -t ${IMAGE_URI} -f $DOCKERFILE_PATH
+${DOCKER_CMD} push ${IMAGE_URI}
 gcloud run deploy $SERVICE_NAME --image=${IMAGE_URI} --region=$CLOUD_RUN_REGION
 EOF
     
@@ -422,7 +591,8 @@ cleanup() {
         log_warning "エラーが発生しました（終了コード: $exit_code）"
         echo ""
         echo "デバッグ情報:"
-        echo "  プロジェクト: $(gcloud config get-value project 2>/dev/null)"
+        echo "  プロジェクト: $PROJECT_ID"
+        echo "  課金アカウント: $BILLING_ACCOUNT_ID"
         echo "  アカウント: $(gcloud config get-value account 2>/dev/null)"
         echo ""
         echo "手動実行コマンド:"
@@ -436,14 +606,17 @@ main() {
     echo "🚀 GCP フルスタック セットアップスクリプト"
     echo "==========================================="
     echo ""
+    echo "📅 生成されるプロジェクトID: $PROJECT_ID"
+    echo ""
     echo "このスクリプトは以下を実行します:"
-    echo "  1. ✅ プロジェクト作成"
-    echo "  2. ✅ Artifact Registry リポジトリ作成"
-    echo "  3. 🐳 Docker認証設定"
-    echo "  4. 🐳 Dockerイメージビルド・プッシュ"
-    echo "  5. ☁️ Cloud Run デプロイ"
-    echo "  6. 🗄️ Cloud SQL インスタンス作成"
-    echo "  7. 🔗 Cloud SQL接続テスト"
+    echo "  1. ✅ 課金アカウント選択"
+    echo "  2. ✅ プロジェクト作成"
+    echo "  3. ✅ Artifact Registry リポジトリ作成"
+    echo "  4. 🐳 Docker認証設定"
+    echo "  5. 🐳 Dockerイメージビルド・プッシュ"
+    echo "  6. ☁️ Cloud Run デプロイ"
+    echo "  7. 🗄️ Cloud SQL インスタンス作成"
+    echo "  8. 🔗 Cloud SQL接続テスト"
     echo ""
     
     # トラップでクリーンアップ関数を設定
@@ -474,17 +647,21 @@ show_help() {
     echo ""
     echo "オプション:"
     echo "  -h, --help              このヘルプを表示"
-    echo "  -p, --project PROJECT   プロジェクトIDを指定"
+    echo "  -p, --project PROJECT   プロジェクトIDを指定（デフォルト: project-YYYYMMddHHMM）"
     echo "  -n, --name NAME         リポジトリ名を指定"
     echo "  -s, --service SERVICE   Cloud Runサービス名を指定"
     echo "  -i, --image IMAGE       イメージ名を指定"
     echo "  -f, --dockerfile FILE   Dockerfileパスを指定"
-    echo "  -b, --billing BILLING   課金アカウントIDを指定"
     echo ""
     echo "例:"
-    echo "  $0"
-    echo "  $0 -p my-project -n my-repo -s my-service"
-    echo "  $0 -f Dockerfile.prod -i my-custom-app"
+    echo "  $0                                    # 対話式で実行"
+    echo "  $0 -p my-project-202501             # プロジェクトIDを指定"
+    echo "  $0 -n my-repo -s my-service         # リポジトリ・サービス名を指定"
+    echo "  $0 -f Dockerfile.prod -i my-app     # Dockerfile・イメージ名を指定"
+    echo ""
+    echo "注意:"
+    echo "  - 課金アカウントは実行時に必ず選択が必要です"
+    echo "  - プロジェクトIDは自動生成されますが、-pオプションで上書き可能です"
     echo ""
 }
 
@@ -513,10 +690,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         -f|--dockerfile)
             DOCKERFILE_PATH="$2"
-            shift 2
-            ;;
-        -b|--billing)
-            BILLING_ACCOUNT_ID="$2"
             shift 2
             ;;
         *)
