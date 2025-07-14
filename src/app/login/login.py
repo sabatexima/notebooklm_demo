@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, redirect, request, session, url_for
+from flask import Flask, Blueprint, redirect, request, session, url_for, render_template
 from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 import google.auth.transport.requests
@@ -35,15 +35,17 @@ flow = Flow.from_client_secrets_file(
     redirect_uri="https://notelm-90502666611.asia-northeast1.run.app/callback"
 )
 
+
+
 @login.route("/")
 def index():
     if "user_email" in session:
-            # DBセッションを取得して処理
+        # DBセッションを取得して処理
         with engine.connect() as conn:
             result = conn.execute(text("""
                 SELECT * FROM user WHERE usernum = :user_id
             """), {
-                "user_id": session["user_id"] 
+                "user_id": session["user_id"]
             }).fetchone()
 
             if not result:
@@ -51,13 +53,12 @@ def index():
                     INSERT INTO user (usernum, email)
                     VALUES (:user_id, :email)
                 """), {
-                    "user_id": session["user_id"] ,
-                    "email": session["user_email"] ,
+                    "user_id": session["user_id"],
+                    "email": session["user_email"],
                 })
                 conn.commit()
         return redirect(url_for("select.index"))
-    return '<a href="/loging">Googleでログイン</a>'
-    # return redirect(url_for("select.index"))
+    return render_template("login.html")
 
 @login.route("/loging")
 def loging():
