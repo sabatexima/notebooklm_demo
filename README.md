@@ -27,47 +27,27 @@ Dockerを使えば、どんな環境でもすぐに動かせるんだ。ヒー�
 *   [Docker](https://www.docker.com/)
 *   [Docker Compose](https://docs.docker.com/compose/) (ローカルで動かす場合)
 *   [Google Cloud SDK](https://cloud.google.com/sdk) (GCPにデプロイする場合)
-*   Google APIキー (`config.json`に設定が必要なんだな)
+*   Google APIキー (gemini利用に必要なんだな)
 
-## セットアップ手順
+## セットアップ手順(GCPへのデプロイ)
+*   一応ローカルでも動かせるけど、めんどくさいから自分で何とかしてくれ
+### 1. git cloneでコードを持ってくるんだ
 
-### 1. APIキーの設定
-
-プロジェクトのルートに `config.json` というファイルを作って、中にGoogleのAPIキーを書くんだ。
-
-```json
-{
-  "googleApiKey": "ここに君のAPIキーを入れるんだな"
-}
+```bash
+git clone -b ogata https://github.com/sabatexima/notebooklm_demo.git
 ```
 
-### 2. ローカル環境での起動
+### 2. 起動
 
-1.  このリポジトリを自分のマシンに持ってくるんだな。(クローン)
-2.  `docker_local` ディレクトリに移動して、コンテナをビルドするんだ。
+1.  `gcp-setup` ディレクトリに移動して、`setup.sh`を実行する
+*   *30分以上かかるから好きなアニメでも見とくんだな
     ```bash
-    cd docker_local
-    ./local_build.sh
+    cd gcp-setup
+    bash ./setup.sh
     ```
-3.  アプリケーションを起動するんだよ！
-    ```bash
-    ./local_start.sh
-    ```
-4.  ブラウザで `http://localhost:8080` を開けば、君だけのAIチャット基地にアクセスできるんだな。
+2.  アプリケーションを起動するんだよ！
+*   シェルスクリプトの実行が完了すると、アプリケーションのURLが表示されるからCtrl+右クリックでアプリケーションにアクセスするんだな
 
-### 3. Google Cloud Platform (GCP) へのデプロイ
-
-1.  GCPプロジェクトで、Artifact RegistryとCloud Runを有効にしておくんだな。
-2.  `docker_gcp/gcp_pull.sh` の中の環境変数を、君のGCP環境に合わせて書き換えるんだ。
-3.  次のコマンドで、DockerイメージをビルドしてGCPにプッシュするんだ。
-    ```bash
-    cd docker_gcp
-    ./gcp_pull.sh
-    ```
-4.  最後に、このコマンドでCloud Runにデプロイするんだな！
-    ```bash
-    gcloud run deploy (君のサービス名) --image (gcp_pull.shで設定したイメージ名) --platform managed --region (君のリージョン) --allow-unauthenticated
-    ```
 
 ## プロジェクトの構造
 
