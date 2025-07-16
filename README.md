@@ -57,9 +57,11 @@ git clone -b ogata https://github.com/sabatexima/notebooklm_demo.git
 ├───config.json         # (君が作る)APIキーを保存する秘密のファイル
 ├───docker_gcp/         # GCPデプロイ用のDockerファイルとかが入ってるんだ
 ├───docker_local/       # ローカルで動かすためのDockerファイルとかだよ
+├───gcp-setup/          # gcpにデプロイするためのシェルスクリプト群だよ
 └───src/                # アプリケーションの心臓部なんだな
     ├───app.py          # Flaskアプリケーションのエントリーポイント
     ├───config.py       # 設定ファイルを読み込むための重要なコード
+    ├───DB.sql          # DB用のsqlファイルだよ
     ├───requirements.txt # このアプリを動かすのに必要なPythonライブラリの一覧
     └───app/
         ├───__init__.py # アプリケーションを初期化するところ
@@ -67,5 +69,6 @@ git clone -b ogata https://github.com/sabatexima/notebooklm_demo.git
         │   └───select.py
         └───chat/       # メインのチャット機能のロジック
             ├───chat.py
+            ├───chara.json # gemini君のためのスクリプトファイルだよ
             └───chatModel.py # AIとの会話を司る、謎に満ちたファイル…
 ```
