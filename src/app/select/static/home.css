@@ -64,6 +64,43 @@ body {
   justify-content: space-between; /* 内容を上下に均等に配置 */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* 影を設定 */
   height: 200px; /* 高さを設定 */
+  position: relative; /* 相対配置を設定 */
+  transition: transform 0.2s, box-shadow 0.2s; /* 移動と影の変化にアニメーションを適用 */
+}
+
+/* カードにホバーした時のスタイル */
+.card:hover {
+  transform: translateY(-5px); /* 上に少し移動 */
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* 影を強く設定 */
+}
+
+/* 削除ボタンのスタイル */
+.delete-button {
+  position: absolute; /* 絶対配置を設定 */
+  top: 10px; /* 上からの位置 */
+  right: 10px; /* 右からの位置 */
+  background: rgba(0, 0, 0, 0.2); /* 半透明の黒い背景 */
+  color: white; /* 文字色を白に設定 */
+  border: none; /* ボーダーを削除 */
+  border-radius: 50%; /* 円形に設定 */
+  width: 24px; /* 幅を設定 */
+  height: 24px; /* 高さを設定 */
+  font-size: 14px; /* フォントサイズを設定 */
+  line-height: 24px; /* 行の高さを設定 */
+  text-align: center; /* テキストを中央揃えに設定 */
+  cursor: pointer; /* カーソルをポインターに設定 */
+  opacity: 0; /* 初期状態では非表示 */
+  transition: opacity 0.2s, background-color 0.2s; /* 透明度と背景色の変化にアニメーションを適用 */
+}
+
+/* カードにホバーした時に削除ボタンを表示 */
+.card:hover .delete-button {
+  opacity: 1; /* 表示状態にする */
+}
+
+/* 削除ボタンにホバーした時のスタイル */
+.delete-button:hover {
+  background: rgba(0, 0, 0, 0.5); /* 背景色を濃くする */
 }
 
 /* カード内の絵文字のスタイル */

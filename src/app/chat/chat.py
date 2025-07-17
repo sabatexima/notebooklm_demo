@@ -77,7 +77,7 @@ def chatting():
 
         row = result.fetchall()
         all_text = str(row)
-    a = chatModel.chat("キャラ2")
+    a = chatModel.chat("チャット")
     ai_message = a.chat(user_message,all_text)
     return jsonify({'reply': ai_message})
 
@@ -90,7 +90,7 @@ def create_memo():
     content = data.get("content")
     ask_gemini = data.get("ask_gemini", False)
     if (ask_gemini):
-        a = chatModel.chat("キャラ")
+        a = chatModel.chat("チャット")
         content = a.chat(title+"："+content,"")
 
     if not title or not content:

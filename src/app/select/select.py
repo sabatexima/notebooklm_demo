@@ -72,3 +72,15 @@ def create_card_api():
         "date": row.created_at
     }
     return jsonify(new_card), 201
+
+# '/api/cards/<int:card_id>'パスへのDELETEリクエストを処理
+# 指定されたIDのカードを削除します。
+@select.route("/api/cards/<int:card_id>", methods=["DELETE"])
+def delete_card_api(card_id):
+    with engine.begin() as conn:
+        conn.execute(text("""DELETE FROM folder WHERE folderid = :card_id AND userid = :user_id
+            """), {
+                "card_id": card_id,
+                "user_id": session["user_id"]
+            })
+    return jsonify({"message": "Card deleted successfully"}), 200

@@ -40,19 +40,20 @@
     <!-- FlaskのJinja2テンプレート構文。
          'cards'リストの各カードに対してループ処理を行います。 -->
     {% for card in cards %}
-    <!-- 各カードをリンクとして表示します。
-         クリックすると'chat.memo'ルートに遷移し、カードのIDを'title'パラメータとして渡します。 -->
-    <a href="{{ url_for('chat.memo', title=card.id) }}" class="card-link">
-      <!-- 個々のカードの表示領域 -->
-      <div class="card">
+    <!-- 個々のカードの表示領域。カードのIDをdata属性として保持します。 -->
+    <div class="card" data-card-id="{{ card.id }}">
+      <!-- 削除ボタン -->
+      <button class="delete-button">&times;</button>
+      <!-- カードの内容（リンク） -->
+      <a href="{{ url_for('chat.memo', title=card.id) }}" class="card-link">
         <!-- カードの絵文字を表示。'|safe'はHTMLエスケープを無効にします。 -->
         <div class="emoji">{{ card.emoji|safe }}</div>
         <!-- カードのタイトルを表示。'|safe'はHTMLエスケープを無効にします。 -->
         <div class="title">{{ card.title|safe }}</div>
         <!-- カードの情報（日付とソース数）を表示 -->
         <div class="info">{{ card.date }}</div>
-      </div>
-    </a>
+      </a>
+    </div>
     {% endfor %}
   </div>
 

@@ -73,3 +73,31 @@ createForm.addEventListener('submit', async function(event) {
     alert('カードの作成に失敗しました。');
   }
 });
+
+// 削除ボタンにイベントリスナーを追加する関数
+function addDeleteEventListeners() {
+  document.querySelectorAll('.delete-button').forEach(button => {
+    button.addEventListener('click', async (event) => {
+      event.preventDefault(); // リンクの遷移を防ぐ
+      event.stopPropagation(); // 親要素へのイベント伝播を防ぐ
+
+      const card = button.closest('.card');
+      const cardId = card.dataset.cardId;
+
+      if (confirm('本当にこのカードを削除しますか？')) {
+        const response = await fetch(`/select/api/cards/${cardId}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          card.remove();
+        } else {
+          alert('カードの削除に失敗しました。');
+        }
+      }
+    });
+  });
+}
+
+// 初期表示時に削除ボタンにイベントリスナーを追加
+addDeleteEventListeners();
