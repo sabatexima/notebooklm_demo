@@ -52,18 +52,39 @@ createForm.addEventListener('submit', async function(event) {
     // レスポンスのJSONデータを取得
     const newCardData = await response.json();
     // 新しく作成されたカードのHTML要素をテンプレートリテラルで生成
-    // memoページへのリンクを生成し、titleパラメータとしてnewCardData.idを渡します。
-    const newCardElement = `
+    const newCardElement = document.createElement('div');
+    newCardElement.classList.add('card');
+    newCardElement.dataset.cardId = newCardData.id;
+    newCardElement.innerHTML = `
+      <button class="delete-button">&times;</button>
       <a href="/chat/memo?title=${encodeURIComponent(newCardData.id)}" class="card-link">
-        <div class="card">
-          <div class="emoji">${newCardData.emoji}</div>
-          <div class="title">${newCardData.title}</div>
-          <div class="info">${newCardData.date}</div>
-        </div>
+        <div class="emoji">${newCardData.emoji}</div>
+        <div class="title">${newCardData.title}</div>
+        <div class="info">${newCardData.date}</div>
       </a>
     `;
     // 生成したカード要素をカードコンテナの末尾に追加
-    cardContainer.insertAdjacentHTML('beforeend', newCardElement);
+    cardContainer.appendChild(newCardElement);
+    // 新しく追加したカードの削除ボタンにもイベントリスナーを追加
+    newCardElement.querySelector('.delete-button').addEventListener('click', async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const card = event.target.closest('.card');
+      const cardId = card.dataset.cardId;
+
+      if (confirm('本当にこのカードを削除しますか？')) {
+        const response = await fetch(`/select/api/cards/${cardId}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          card.remove();
+        } else {
+          alert('カードの削除に失敗しました。');
+        }
+      }
+    });
     // モーダルを非表示に設定
     modal.style.display = "none";
     // フォームの入力内容をリセット

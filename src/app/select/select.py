@@ -64,7 +64,7 @@ def create_card_api():
             })
     rows = result.fetchall()  # 全行取得
     print(rows)
-    row = rows[0]
+    row = rows[-1]
     new_card={
         "id": row.folderid,
         "emoji": row.title,
