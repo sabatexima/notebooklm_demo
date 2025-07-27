@@ -9,8 +9,10 @@ from langchain.schema import (
 import json
 
 # チャット機能を提供するクラス
-class chat:
-
+class chara_setting:
+    def __init__(self,name):
+        # 設定ファイルを読み込む
+        self.chara = self.setChara(name)
     # モデルを安全に呼び出す
     # モデルの呼び出し中にエラーが発生しても、プログラムが停止しないようにします。
     def safe_invoke(self, model, messages):
@@ -32,19 +34,26 @@ class chat:
         )
         return llm
 
+    # キャラクターを設定
+    # chara.jsonファイルからキャラクターの情報を読み込みます。
+    def setChara(self, name):
+        with open("app/chat/chara.json", "r", encoding="utf-8") as file:
+            chara_data = json.load(file)
+        user = chara_data.get(name, {}) 
+        return user
+
     # チャットを実行
     # ユーザーからのテキストメッセージを受け取り、AIの応答を生成します。
-    def chat(self, chatlog):
-        llm = self.setLlm("gemini-2.5-pro")
+    def chat(self, text,setting):
+        llm = self.setLlm("gemini-2.5-flash")
 
         # メッセージを作成
         # システムメッセージとしてキャラクター情報、人間からのメッセージとしてユーザーのテキストを設定します。
         messages = [
-            SystemMessage(content="以下のチャットのやりとりをもとに、ユーザーの心理的特徴（性格、感情傾向、開示度など）を推定し、それに対する生成AIの応答がどれだけ心理的に適応しているかを100点満点で評価してください。"),
-            HumanMessage(content=chatlog)
+            SystemMessage(content=json.dumps(self.chara, ensure_ascii=False) + ",前提知識：" +setting),
+            HumanMessage(content=text)
         ]
 
         response = self.safe_invoke(llm, messages)
         chat_con = response.content
-        print(chat_con)
         return chat_con
